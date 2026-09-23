@@ -1,227 +1,4919 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width,initial-scale=1">
-  <title>WeatherCast Studio</title>
-  <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover">
+<title>WeatherCast Studio v3</title>
+
+<style>
+:root{
+  --bg:#071019;
+  --panel:#0d1722;
+  --panel2:#111f2d;
+  --panel3:#172738;
+  --line:#26394c;
+  --text:#f5f8fb;
+  --muted:#8ea1b4;
+  --accent:#48a7ff;
+  --green:#25d98a;
+  --danger:#ff5d6c;
+  --radius:14px;
+}
+
+*{box-sizing:border-box}
+
+html,body{
+  margin:0;
+  width:100%;
+  height:100%;
+  background:var(--bg);
+  color:var(--text);
+  font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+}
+
+button,input,select{
+  font:inherit;
+}
+
+button{
+  cursor:pointer;
+}
+
+body{
+  overflow:hidden;
+}
+
+.app{
+  width:100vw;
+  height:100vh;
+  display:grid;
+  grid-template-columns:245px minmax(0,1fr);
+}
+
+/* SIDEBAR */
+
+.sidebar{
+  background:#09131d;
+  border-right:1px solid var(--line);
+  padding:18px 14px;
+  display:flex;
+  flex-direction:column;
+  min-width:0;
+  overflow:auto;
+}
+
+.brand{
+  display:flex;
+  align-items:center;
+  gap:11px;
+  margin-bottom:22px;
+  padding:4px 5px;
+}
+
+.brand-icon{
+  width:38px;
+  height:38px;
+  display:grid;
+  place-items:center;
+  border-radius:11px;
+  background:linear-gradient(135deg,#2589dc,#55c4ff);
+  font-size:21px;
+}
+
+.brand strong{
+  display:block;
+  font-size:15px;
+}
+
+.brand small{
+  color:var(--muted);
+  font-size:11px;
+}
+
+.nav{
+  display:flex;
+  flex-direction:column;
+  gap:6px;
+}
+
+.nav button{
+  width:100%;
+  border:0;
+  background:transparent;
+  color:#aab9c8;
+  text-align:left;
+  padding:12px 13px;
+  border-radius:10px;
+  transition:.18s;
+}
+
+.nav button:hover{
+  background:#112130;
+  color:#fff;
+}
+
+.nav button.active{
+  background:#173653;
+  color:#fff;
+  box-shadow:inset 3px 0 var(--accent);
+}
+
+.sidebar-bottom{
+  margin-top:auto;
+  padding-top:20px;
+}
+
+.status{
+  border:1px solid var(--line);
+  background:#0c1824;
+  border-radius:12px;
+  padding:12px;
+  font-size:12px;
+}
+
+.status-line{
+  display:flex;
+  align-items:center;
+  gap:7px;
+}
+
+.dot{
+  width:8px;
+  height:8px;
+  border-radius:50%;
+  background:var(--green);
+  box-shadow:0 0 12px var(--green);
+}
+
+/* MAIN */
+
+.main{
+  min-width:0;
+  min-height:0;
+  display:grid;
+  grid-template-rows:auto minmax(0,1fr);
+}
+
+.topbar{
+  min-height:68px;
+  border-bottom:1px solid var(--line);
+  background:#0a141f;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:15px;
+  padding:12px 18px;
+}
+
+.top-title h1{
+  font-size:18px;
+  margin:0;
+}
+
+.top-title p{
+  color:var(--muted);
+  font-size:12px;
+  margin:3px 0 0;
+}
+
+.top-actions{
+  display:flex;
+  gap:8px;
+  align-items:center;
+}
+
+.btn{
+  border:1px solid var(--line);
+  background:#122131;
+  color:#eaf1f8;
+  border-radius:9px;
+  padding:9px 12px;
+  transition:.18s;
+}
+
+.btn:hover{
+  background:#193047;
+}
+
+.btn.primary{
+  background:#197ac0;
+  border-color:#2e96df;
+}
+
+.btn.success{
+  background:#0e704d;
+  border-color:#1aa56f;
+}
+
+.btn.danger{
+  background:#64232b;
+  border-color:#9f3845;
+}
+
+.content{
+  min-width:0;
+  min-height:0;
+  overflow:auto;
+  padding:16px;
+}
+
+/* TABS */
+
+.tab{
+  display:none;
+  min-height:100%;
+}
+
+.tab.active{
+  display:block;
+}
+
+/* STUDIO */
+
+.studio{
+  height:100%;
+  min-height:0;
+  display:grid;
+  grid-template-columns:minmax(0,1fr) 330px;
+  gap:14px;
+}
+
+.preview-column{
+  min-width:0;
+  min-height:0;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+
+.preview-header{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+}
+
+.preview-header h2{
+  margin:0;
+  font-size:14px;
+}
+
+.preview-header span{
+  color:var(--muted);
+  font-size:11px;
+}
+
+.preview-wrap{
+  position:relative;
+  flex:1;
+  min-height:320px;
+  display:grid;
+  place-items:center;
+  background:#03070b;
+  border:1px solid var(--line);
+  border-radius:16px;
+  overflow:hidden;
+}
+
+.stage{
+  position:relative;
+  width:min(100%,calc(100vh * 16 / 9));
+  aspect-ratio:16 / 9;
+  overflow:hidden;
+  background:#152235;
+  isolation:isolate;
+  container-type:size;
+}
+
+/* BACKGROUND */
+
+.weather-bg{
+  position:absolute;
+  inset:0;
+  z-index:1;
+  overflow:hidden;
+  background:
+    linear-gradient(180deg,#4b9ee8 0%,#92cef1 53%,#d6edfa 100%);
+  transition:background .6s;
+}
+
+.weather-bg:before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:
+    radial-gradient(circle at 78% 20%,rgba(255,255,255,.9) 0 5%,transparent 5.5%),
+    radial-gradient(circle at 20% 65%,rgba(255,255,255,.22),transparent 30%);
+}
+
+.weather-bg.day{
+  background:
+    linear-gradient(180deg,#3288d1 0%,#82c8ed 55%,#d9eff9 100%);
+}
+
+.weather-bg.night{
+  background:
+    radial-gradient(circle at 78% 18%,#fff 0 1%,transparent 1.5%),
+    radial-gradient(circle at 35% 28%,rgba(255,255,255,.75) 0 1px,transparent 2px),
+    linear-gradient(180deg,#071126 0%,#101d40 58%,#25365b 100%);
+}
+
+.weather-bg.cloudy{
+  background:
+    linear-gradient(180deg,#506d82,#8fa5b2 55%,#b7c5cb);
+}
+
+.weather-bg.rain{
+  background:
+    linear-gradient(180deg,#263a4d,#536878 60%,#71828a);
+}
+
+.weather-bg.snow{
+  background:
+    linear-gradient(180deg,#61798d,#a7c0d0 60%,#dce8ed);
+}
+
+.weather-bg.storm{
+  background:
+    linear-gradient(180deg,#111923,#273747 58%,#475966);
+}
+
+.weather-bg.fog{
+  background:
+    linear-gradient(180deg,#687982,#aeb8b8 60%,#c7ceca);
+}
+
+.bg-sun{
+  position:absolute;
+  width:22cqw;
+  height:22cqw;
+  max-width:230px;
+  max-height:230px;
+  min-width:70px;
+  min-height:70px;
+  border-radius:50%;
+  background:#fff1a6;
+  box-shadow:0 0 70px 25px rgba(255,227,116,.55);
+  top:8%;
+  right:12%;
+  animation:sunGlow 4s ease-in-out infinite;
+}
+
+.night .bg-sun{
+  display:none;
+}
+
+.bg-cloud{
+  position:absolute;
+  width:22%;
+  height:8%;
+  min-height:28px;
+  border-radius:100px;
+  background:rgba(255,255,255,.65);
+  filter:blur(2px);
+  animation:cloudMove 22s linear infinite;
+}
+
+.bg-cloud:before,
+.bg-cloud:after{
+  content:"";
+  position:absolute;
+  background:inherit;
+  border-radius:50%;
+}
+
+.bg-cloud:before{
+  width:45%;
+  height:130%;
+  left:18%;
+  bottom:20%;
+}
+
+.bg-cloud:after{
+  width:35%;
+  height:110%;
+  right:17%;
+  bottom:10%;
+}
+
+.cloud1{top:18%;left:-25%}
+.cloud2{top:37%;left:25%;animation-duration:30s;opacity:.55}
+.cloud3{top:9%;left:55%;animation-duration:26s;opacity:.45}
+
+.rain-layer,
+.snow-layer,
+.wind-layer,
+.fog-layer,
+.lightning-layer{
+  position:absolute;
+  inset:0;
+  pointer-events:none;
+}
+
+.rain-drop{
+  position:absolute;
+  top:-12%;
+  width:2px;
+  height:6%;
+  background:rgba(220,245,255,.7);
+  transform:rotate(16deg);
+  animation:rainFall linear infinite;
+}
+
+.snow-flake{
+  position:absolute;
+  top:-8%;
+  color:#fff;
+  font-size:clamp(10px,1.6cqw,24px);
+  animation:snowFall linear infinite;
+  opacity:.85;
+}
+
+.wind-line{
+  position:absolute;
+  height:2px;
+  width:12%;
+  background:rgba(255,255,255,.35);
+  border-radius:5px;
+  animation:windMove linear infinite;
+}
+
+.fog-puff{
+  position:absolute;
+  width:35%;
+  height:18%;
+  background:rgba(255,255,255,.2);
+  filter:blur(22px);
+  border-radius:50%;
+  animation:fogMove 13s ease-in-out infinite alternate;
+}
+
+.lightning-layer{
+  background:transparent;
+  animation:lightning 8s infinite;
+}
+
+/* CAMERA */
+
+.camera-layer{
+  position:absolute;
+  z-index:30;
+  left:50%;
+  top:49%;
+  width:44%;
+  height:68%;
+  transform:translate(-50%,-50%);
+  overflow:hidden;
+  border-radius:14px;
+  border:2px solid rgba(255,255,255,.2);
+  background:#111;
+  box-shadow:0 16px 50px rgba(0,0,0,.35);
+  touch-action:none;
+  cursor:grab;
+}
+
+.camera-layer.dragging{
+  cursor:grabbing;
+}
+
+.camera-layer video{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  display:block;
+  transform:scaleX(-1);
+}
+
+.camera-placeholder{
+  position:absolute;
+  inset:0;
+  display:grid;
+  place-items:center;
+  text-align:center;
+  background:linear-gradient(145deg,#142332,#09121b);
+  color:#8093a6;
+}
+
+.camera-placeholder div{
+  font-size:12px;
+}
+
+.camera-placeholder strong{
+  display:block;
+  color:#d9e3ed;
+  margin-bottom:5px;
+}
+
+/* FORECAST */
+
+.forecast-layer{
+  position:absolute;
+  z-index:20;
+  left:50%;
+  top:28%;
+  width:82%;
+  height:31%;
+  transform:translate(-50%,-50%);
+  touch-action:none;
+  pointer-events:auto;
+}
+
+.forecast-layer.hidden{
+  display:none;
+}
+
+.forecast-title{
+  font-size:clamp(9px,1.15cqw,18px);
+  font-weight:800;
+  margin-bottom:6px;
+  text-shadow:0 2px 8px rgba(0,0,0,.3);
+}
+
+.forecast-grid{
+  display:grid;
+  gap:7px;
+  height:calc(100% - 25px);
+}
+
+.forecast-grid.multi{
+  grid-template-columns:repeat(4,minmax(0,1fr));
+}
+
+.forecast-grid.week{
+  grid-template-columns:repeat(7,minmax(0,1fr));
+}
+
+.forecast-card{
+  min-width:0;
+  min-height:0;
+  padding:8px 5px;
+  border:1px solid rgba(255,255,255,.2);
+  border-radius:10px;
+  background:rgba(10,22,35,.78);
+  backdrop-filter:blur(8px);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  overflow:hidden;
+}
+
+.forecast-card .day{
+  font-weight:800;
+  font-size:clamp(8px,1cqw,15px);
+}
+
+.forecast-card .icon{
+  font-size:clamp(18px,2.4cqw,40px);
+  line-height:1.1;
+  margin:2px 0;
+}
+
+.forecast-card img{
+  width:clamp(20px,3cqw,42px);
+  height:clamp(20px,3cqw,42px);
+  object-fit:contain;
+}
+
+.forecast-card .temps{
+  font-size:clamp(8px,1cqw,14px);
+  white-space:nowrap;
+}
+
+.high{
+  color:var(--high,#fff);
+  font-weight:800;
+}
+
+.low{
+  color:var(--low,#a8b9c9);
+}
+
+/* CURRENT GRAPHIC */
+
+.current-layer{
+  position:absolute;
+  z-index:25;
+  left:8%;
+  bottom:8%;
+  width:34%;
+  min-height:23%;
+  border-radius:14px;
+  background:rgba(8,17,28,.85);
+  border:1px solid rgba(255,255,255,.18);
+  backdrop-filter:blur(12px);
+  padding:clamp(8px,1.2cqw,20px);
+  display:grid;
+  grid-template-columns:auto 1fr;
+  align-items:center;
+  gap:10px;
+  touch-action:none;
+}
+
+.current-icon{
+  font-size:clamp(34px,5cqw,78px);
+  line-height:1;
+}
+
+.current-temp{
+  font-size:clamp(32px,5cqw,76px);
+  line-height:.95;
+  font-weight:900;
+}
+
+.current-location{
+  font-size:clamp(10px,1.35cqw,21px);
+  font-weight:800;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
+.current-condition{
+  color:var(--condition,#cbd7e2);
+  font-size:clamp(9px,1.1cqw,17px);
+  margin-top:3px;
+}
+
+.current-layer.compact{
+  width:29%;
+  min-height:18%;
+}
+
+.current-layer.large{
+  width:48%;
+  min-height:30%;
+}
+
+/* LOWER THIRD */
+
+.lower-third{
+  position:absolute;
+  z-index:50;
+  left:50%;
+  bottom:5%;
+  width:72%;
+  min-height:10%;
+  transform:translateX(-50%);
+  border-radius:11px;
+  overflow:hidden;
+  background:rgba(5,15,25,.9);
+  border-left:7px solid var(--accent);
+  box-shadow:0 12px 35px rgba(0,0,0,.3);
+  padding:8px 17px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  touch-action:none;
+}
+
+.lower-third .lt-main{
+  min-width:0;
+}
+
+.lower-third .lt-location{
+  font-size:clamp(11px,1.6cqw,24px);
+  font-weight:900;
+}
+
+.lower-third .lt-condition{
+  font-size:clamp(9px,1.05cqw,16px);
+  color:#b7c7d6;
+}
+
+.lower-third .lt-temp{
+  font-size:clamp(18px,2.8cqw,42px);
+  font-weight:900;
+  white-space:nowrap;
+}
+
+/* CUSTOM */
+
+.custom-text,
+.custom-image{
+  position:absolute;
+  z-index:60;
+  touch-action:none;
+}
+
+.custom-text{
+  left:50%;
+  top:10%;
+  transform:translate(-50%,-50%);
+  font-weight:900;
+  white-space:nowrap;
+  text-shadow:0 3px 12px rgba(0,0,0,.5);
+}
+
+.custom-image{
+  left:84%;
+  top:12%;
+  width:10%;
+  transform:translate(-50%,-50%);
+}
+
+.custom-image img{
+  width:100%;
+  display:block;
+  object-fit:contain;
+}
+
+/* LOGOS */
+
+.logo{
+  position:absolute;
+  z-index:65;
+  object-fit:contain;
+  pointer-events:none;
+  filter:drop-shadow(0 2px 7px rgba(0,0,0,.3));
+}
+
+.logo.tl{left:2%;top:2%}
+.logo.tr{right:2%;top:2%}
+.logo.bl{left:2%;bottom:2%}
+.logo.br{right:2%;bottom:2%}
+.logo.c{left:50%;top:50%;transform:translate(-50%,-50%)}
+
+/* GREEN SCREEN */
+
+.green-overlay{
+  position:absolute;
+  inset:0;
+  z-index:5;
+  pointer-events:none;
+  display:none;
+}
+
+.stage.green-mode .green-overlay{
+  display:block;
+  background:#00ff00;
+}
+
+.stage.green-mode .weather-bg{
+  opacity:1;
+}
+
+.stage.green-mode .camera-layer{
+  border:2px solid rgba(0,255,0,.8);
+}
+
+.key-info{
+  position:absolute;
+  left:12px;
+  top:12px;
+  z-index:90;
+  background:rgba(0,0,0,.55);
+  padding:6px 9px;
+  border-radius:7px;
+  font-size:10px;
+  display:none;
+}
+
+.stage.green-mode .key-info{
+  display:block;
+}
+
+/* CONTROL PANEL */
+
+.controls{
+  min-width:0;
+  min-height:0;
+  overflow:auto;
+  border:1px solid var(--line);
+  background:#0a141e;
+  border-radius:14px;
+  padding:12px;
+}
+
+.control-section{
+  border-bottom:1px solid #1d2c3b;
+  padding-bottom:13px;
+  margin-bottom:13px;
+}
+
+.control-section:last-child{
+  border:0;
+  margin-bottom:0;
+}
+
+.control-section h3{
+  margin:0 0 9px;
+  font-size:12px;
+  text-transform:uppercase;
+  letter-spacing:.08em;
+  color:#a9bbcc;
+}
+
+.field{
+  margin-bottom:9px;
+}
+
+.field:last-child{
+  margin-bottom:0;
+}
+
+.field label{
+  display:flex;
+  justify-content:space-between;
+  gap:8px;
+  color:#b8c7d5;
+  font-size:11px;
+  margin-bottom:5px;
+}
+
+.field label output{
+  color:#fff;
+}
+
+input[type="text"],
+input[type="number"],
+select{
+  width:100%;
+  border:1px solid var(--line);
+  background:#101e2b;
+  color:#fff;
+  border-radius:8px;
+  padding:8px 9px;
+  outline:none;
+}
+
+input[type="color"]{
+  width:100%;
+  height:35px;
+  border:1px solid var(--line);
+  background:#101e2b;
+  border-radius:8px;
+  padding:3px;
+}
+
+input[type="range"]{
+  width:100%;
+  accent-color:var(--accent);
+}
+
+.mode-grid{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:5px;
+}
+
+.mode-btn{
+  border:1px solid var(--line);
+  background:#101d29;
+  color:#a9bac9;
+  border-radius:8px;
+  padding:8px 4px;
+  font-size:10px;
+}
+
+.mode-btn.active{
+  background:#18517c;
+  border-color:#318bc6;
+  color:#fff;
+}
+
+.big-actions{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:7px;
+}
+
+.big-actions button{
+  min-height:42px;
+  font-weight:800;
+}
+
+.toggle-row{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+  border:1px solid var(--line);
+  background:#0f1c28;
+  padding:8px 9px;
+  border-radius:8px;
+  margin-bottom:6px;
+}
+
+.toggle-row span{
+  font-size:11px;
+}
+
+.switch{
+  position:relative;
+  width:38px;
+  height:21px;
+  flex:none;
+}
+
+.switch input{
+  opacity:0;
+  width:0;
+  height:0;
+}
+
+.slider{
+  position:absolute;
+  inset:0;
+  border-radius:20px;
+  background:#293b4d;
+  transition:.2s;
+}
+
+.slider:before{
+  content:"";
+  position:absolute;
+  width:15px;
+  height:15px;
+  left:3px;
+  top:3px;
+  border-radius:50%;
+  background:#fff;
+  transition:.2s;
+}
+
+.switch input:checked + .slider{
+  background:var(--accent);
+}
+
+.switch input:checked + .slider:before{
+  transform:translateX(17px);
+}
+
+/* LAYERS */
+
+.layer-item{
+  border:1px solid var(--line);
+  background:#0e1a25;
+  border-radius:9px;
+  margin-bottom:6px;
+  overflow:hidden;
+}
+
+.layer-head{
+  display:flex;
+  align-items:center;
+  gap:7px;
+  padding:8px;
+}
+
+.layer-head strong{
+  flex:1;
+  font-size:11px;
+}
+
+.layer-options{
+  padding:8px;
+  border-top:1px solid var(--line);
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:7px;
+}
+
+.layer-options .field{
+  margin:0;
+}
+
+.layer-options .field.full{
+  grid-column:1 / -1;
+}
+
+/* FORECAST EDITOR */
+
+.forecast-editor{
+  display:flex;
+  flex-direction:column;
+  gap:7px;
+}
+
+.forecast-edit-row{
+  display:grid;
+  grid-template-columns:45px 1fr 65px 65px;
+  gap:5px;
+  align-items:center;
+}
+
+.forecast-edit-row input,
+.forecast-edit-row select{
+  padding:6px;
+  font-size:10px;
+}
+
+/* LOGOS */
+
+.logo-card{
+  border:1px solid var(--line);
+  border-radius:9px;
+  padding:8px;
+  margin-bottom:7px;
+  background:#0e1a25;
+}
+
+.logo-preview{
+  height:55px;
+  display:grid;
+  place-items:center;
+  background:#08111a;
+  border-radius:7px;
+  margin-bottom:7px;
+}
+
+.logo-preview img{
+  max-width:90%;
+  max-height:48px;
+}
+
+.logo-actions{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:6px;
+}
+
+.logo-actions input,
+.logo-actions select{
+  padding:6px;
+  font-size:10px;
+}
+
+/* INFO CARDS */
+
+.card-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+  gap:12px;
+}
+
+.card{
+  border:1px solid var(--line);
+  background:#0c1722;
+  border-radius:13px;
+  padding:14px;
+}
+
+.card h2{
+  font-size:14px;
+  margin:0 0 12px;
+}
+
+.card p{
+  color:var(--muted);
+  font-size:12px;
+  line-height:1.55;
+}
+
+.device-row{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:8px;
+}
+
+.obs-url{
+  display:flex;
+  gap:6px;
+}
+
+.obs-url input{
+  flex:1;
+}
+
+.warning{
+  border:1px solid #765a25;
+  background:#2c2413;
+  color:#e8c97a;
+  padding:10px;
+  border-radius:9px;
+  font-size:11px;
+  line-height:1.5;
+}
+
+/* FULLSCREEN OUTPUT */
+
+body.output-mode{
+  background:transparent;
+  overflow:hidden;
+}
+
+body.output-mode .app{
+  display:block;
+}
+
+body.output-mode .sidebar,
+body.output-mode .topbar,
+body.output-mode .content > .tab:not(#dashboardTab),
+body.output-mode .studio > .controls,
+body.output-mode .preview-header{
+  display:none!important;
+}
+
+body.output-mode .main,
+body.output-mode .content,
+body.output-mode #dashboardTab,
+body.output-mode .studio,
+body.output-mode .preview-column,
+body.output-mode .preview-wrap{
+  display:block;
+  width:100vw;
+  height:100vh;
+  min-height:0;
+  padding:0;
+  margin:0;
+  border:0;
+  background:transparent;
+}
+
+body.output-mode .stage{
+  width:100vw;
+  height:100vh;
+  aspect-ratio:auto;
+  border-radius:0;
+}
+
+body.output-mode .camera-layer{
+  display:none;
+}
+
+/* RESPONSIVE */
+
+@media(max-width:1100px){
+  .app{
+    grid-template-columns:205px minmax(0,1fr);
+  }
+
+  .studio{
+    grid-template-columns:minmax(0,1fr) 285px;
+  }
+}
+
+@media(max-width:850px){
+  body{
+    overflow:auto;
+  }
+
+  .app{
+    min-height:100vh;
+    height:auto;
+    grid-template-columns:1fr;
+  }
+
+  .sidebar{
+    border-right:0;
+    border-bottom:1px solid var(--line);
+    position:sticky;
+    top:0;
+    z-index:100;
+    padding:9px;
+  }
+
+  .brand{
+    margin-bottom:7px;
+  }
+
+  .nav{
+    display:grid;
+    grid-template-columns:repeat(5,1fr);
+  }
+
+  .nav button{
+    text-align:center;
+    padding:8px 3px;
+    font-size:10px;
+  }
+
+  .sidebar-bottom{
+    display:none;
+  }
+
+  .main{
+    min-height:calc(100vh - 105px);
+  }
+
+  .studio{
+    height:auto;
+    grid-template-columns:1fr;
+  }
+
+  .preview-wrap{
+    min-height:50vw;
+  }
+
+  .controls{
+    max-height:none;
+  }
+}
+
+@media(max-width:550px){
+  .topbar{
+    padding:10px;
+  }
+
+  .top-actions .btn:not(.primary){
+    display:none;
+  }
+
+  .content{
+    padding:8px;
+  }
+
+  .preview-wrap{
+    min-height:56vw;
+  }
+
+  .nav{
+    grid-template-columns:repeat(5,1fr);
+  }
+
+  .mode-grid{
+    grid-template-columns:1fr;
+  }
+
+  .big-actions{
+    grid-template-columns:1fr 1fr;
+  }
+}
+
+/* ANIMATIONS */
+
+@keyframes sunGlow{
+  0%,100%{transform:scale(1);opacity:.9}
+  50%{transform:scale(1.06);opacity:1}
+}
+
+@keyframes cloudMove{
+  from{transform:translateX(0)}
+  to{transform:translateX(145vw)}
+}
+
+@keyframes rainFall{
+  to{transform:translate3d(-20px,120vh,0) rotate(16deg)}
+}
+
+@keyframes snowFall{
+  to{transform:translate3d(80px,120vh,0) rotate(360deg)}
+}
+
+@keyframes windMove{
+  from{transform:translateX(-20vw);opacity:0}
+  15%{opacity:1}
+  to{transform:translateX(120vw);opacity:0}
+}
+
+@keyframes fogMove{
+  from{transform:translateX(-15%) scale(1)}
+  to{transform:translateX(80%) scale(1.4)}
+}
+
+@keyframes lightning{
+  0%,92%,96%,100%{background:transparent}
+  93%{background:rgba(255,255,255,.5)}
+  94%{background:transparent}
+  95%{background:rgba(255,255,255,.25)}
+}
+
+.pulse-animation{
+  animation:graphicPulse 2.3s ease-in-out infinite;
+}
+
+@keyframes graphicPulse{
+  0%,100%{filter:none}
+  50%{filter:brightness(1.18)}
+}
+
+.slide-animation{
+  animation:slideGraphic .5s ease-out;
+}
+
+@keyframes slideGraphic{
+  from{transform:translate(-50%,-50%) translateY(30px);opacity:0}
+  to{transform:translate(-50%,-50%) translateY(0);opacity:1}
+}
+</style>
 </head>
+
 <body>
-  <header class="topbar">
+
+<div class="app">
+
+  <aside class="sidebar">
     <div class="brand">
-      <div class="brand-mark" id="brandMark">☁</div>
+      <div class="brand-icon">🌦️</div>
       <div>
-        <strong id="brandName">WeatherCast Studio</strong>
-        <span>Weather graphics + live camera</span>
+        <strong>WeatherCast Studio</strong>
+        <small>Broadcast Control v3</small>
       </div>
     </div>
-    <div class="top-actions">
-      <button class="ghost" id="fullscreenBtn">Fullscreen</button>
-      <button class="primary" id="saveBtn">Save setup</button>
-    </div>
-  </header>
 
-  <main class="app">
-    <aside class="sidebar">
-      <nav>
-        <button class="nav active" data-tab="dashboard">Dashboard</button>
-        <button class="nav" data-tab="camera">Camera</button>
-        <button class="nav" data-tab="graphics">Graphics</button>
-        <button class="nav" data-tab="branding">Branding</button>
-        <button class="nav" data-tab="obs">OBS / Stream</button>
-      </nav>
-      <div class="connection">
-        <span class="dot"></span>
-        Browser studio ready
-      </div>
-    </aside>
+    <nav class="nav">
+      <button class="active" data-tab="dashboard">🎥 Studio</button>
+      <button data-tab="camera">📷 Camera</button>
+      <button data-tab="graphics">🎨 Graphics</button>
+      <button data-tab="branding">🏷️ Branding</button>
+      <button data-tab="obs">📡 OBS</button>
+    </nav>
 
-    <section class="content">
-      <div class="tab" id="dashboard">
-        <div class="hero">
-          <div>
-            <p class="eyebrow">BROADCAST WEATHER STUDIO</p>
-            <h1>Build your weather scene.</h1>
-            <p class="muted">Use your camera, weather graphics, logos and overlays together in one browser-based control room.</p>
-          </div>
-          <div class="clock" id="clock">--:--:--</div>
+    <div class="sidebar-bottom">
+      <div class="status">
+        <div class="status-line">
+          <span class="dot"></span>
+          <span>Studio Ready</span>
         </div>
+        <div style="color:#74889b;margin-top:6px">
+          Changes update the broadcast preview live.
+        </div>
+      </div>
+    </div>
+  </aside>
 
-        <div class="grid two">
-          <article class="card preview-card">
-            <div class="card-head"><h2>Live preview</h2><span class="pill" id="cameraStatus">CAMERA OFF</span></div>
-            <div class="stage small" id="previewStage">
-              <video id="cameraPreview" autoplay muted playsinline></video>
-              <div class="weather-overlay" id="weatherOverlay">
-                <div class="overlay-location" id="overlayLocation">YOUR CITY</div>
-                <div class="overlay-temp" id="overlayTemp">72°</div>
-                <div class="overlay-condition" id="overlayCondition">Partly Cloudy</div>
-              </div>
-              <div id="weekOverlay" class="week-overlay"></div>
-              <img id="previewLogo" class="preview-logo" alt="Logo">
-              <div class="stage-placeholder" id="stagePlaceholder">Camera preview</div>
-            </div>
-            <div class="button-row">
-              <button class="primary" id="startCamera">Start camera</button>
-              <button class="ghost" id="stopCamera">Stop</button>
-            </div>
-          </article>
+  <main class="main">
 
-          <article class="card">
-            <div class="card-head"><h2>Weather card</h2><span class="pill live">GRAPHIC</span></div>
-            <div class="weather-card">
+    <header class="topbar">
+      <div class="top-title">
+        <h1 id="pageTitle">Live Weather Studio</h1>
+        <p id="clock">--:--:--</p>
+      </div>
+
+      <div class="top-actions">
+        <button class="btn" id="fullscreenBtn">⛶ Fullscreen</button>
+        <button class="btn" id="resetBtn">Reset</button>
+        <button class="btn primary" id="saveBtn">Save Setup</button>
+      </div>
+    </header>
+
+    <div class="content">
+
+      <!-- STUDIO -->
+
+      <section class="tab active" id="dashboardTab">
+
+        <div class="studio">
+
+          <div class="preview-column">
+
+            <div class="preview-header">
               <div>
-                <p class="muted">CURRENT CONDITIONS</p>
-                <h3 id="cardLocation">Your City</h3>
-                <div class="big-temp" id="cardTemp">72°F</div>
-                <p id="cardCondition">Partly Cloudy</p>
+                <h2>Broadcast Composition</h2>
+                <span>Background → Forecast → Camera → Overlays</span>
               </div>
-              <div class="weather-icon" id="weatherIcon">⛅</div>
-            </div>
-            <div class="button-row">
-              <button class="primary" id="updateGraphic">Update graphic</button>
-              <button class="ghost" id="randomWeather">Demo weather</button>
-            </div>
-          </article>
-        </div>
 
-        <div class="grid three">
-          <div class="stat"><span>Camera</span><strong id="statCamera">OFF</strong></div>
-          <div class="stat"><span>Graphics</span><strong>READY</strong></div>
-          <div class="stat"><span>OBS</span><strong id="statObs">BROWSER</strong></div>
-        </div>
-      </div>
+              <span id="resolutionLabel">16:9 • Responsive</span>
+            </div>
 
-      <div class="tab hidden" id="camera">
-        <div class="section-title"><p class="eyebrow">CAMERA</p><h1>Camera control</h1></div>
-        <div class="card">
-          <div class="stage" id="cameraStage">
-            <video id="cameraVideo" autoplay muted playsinline></video>
-            <div class="stage-placeholder" id="cameraPlaceholder">Your camera feed will appear here.</div>
+            <div class="preview-wrap">
+              <div class="stage" id="stage">
+
+                <div class="weather-bg day" id="weatherBg">
+                  <div class="bg-sun"></div>
+                  <div class="bg-cloud cloud1"></div>
+                  <div class="bg-cloud cloud2"></div>
+                  <div class="bg-cloud cloud3"></div>
+
+                  <div class="rain-layer" id="rainLayer"></div>
+                  <div class="snow-layer" id="snowLayer"></div>
+                  <div class="wind-layer" id="windLayer"></div>
+                  <div class="fog-layer" id="fogLayer"></div>
+                  <div class="lightning-layer" id="lightningLayer"></div>
+                </div>
+
+                <div class="green-overlay"></div>
+
+                <div class="key-info">
+                  GREEN SCREEN • CAMERA ABOVE WEATHER
+                </div>
+
+                <!-- CURRENT WEATHER -->
+
+                <div class="current-layer" id="currentLayer">
+
+                  <div class="current-icon" id="currentIcon">☀️</div>
+
+                  <div>
+                    <div class="current-temp" id="currentTemp">72°</div>
+                    <div class="current-location" id="currentLocation">
+                      Birmingham, AL
+                    </div>
+                    <div class="current-condition" id="currentCondition">
+                      Sunny
+                    </div>
+                  </div>
+
+                </div>
+
+                <!-- FORECAST -->
+
+                <div class="forecast-layer" id="forecastLayer">
+
+                  <div class="forecast-title" id="forecastTitle">
+                    NEXT 7 DAYS
+                  </div>
+
+                  <div class="forecast-grid week" id="forecastGrid"></div>
+
+                </div>
+
+                <!-- CAMERA -->
+
+                <div class="camera-layer" id="cameraLayer">
+
+                  <video id="previewVideo" autoplay muted playsinline></video>
+
+                  <div class="camera-placeholder" id="cameraPlaceholder">
+                    <div>
+                      <strong>Camera Off</strong>
+                      Select a camera to begin the live preview.
+                    </div>
+                  </div>
+
+                </div>
+
+                <!-- LOWER THIRD -->
+
+                <div class="lower-third" id="lowerThird">
+
+                  <div class="lt-main">
+                    <div class="lt-location" id="ltLocation">
+                      Birmingham, Alabama
+                    </div>
+                    <div class="lt-condition" id="ltCondition">
+                      Sunny • Current Conditions
+                    </div>
+                  </div>
+
+                  <div class="lt-temp" id="ltTemp">72°</div>
+
+                </div>
+
+                <!-- CUSTOM TEXT -->
+
+                <div class="custom-text" id="customText">
+                  LIVE WEATHER
+                </div>
+
+                <div class="custom-image" id="customImage">
+                  <img id="customImageImg" alt="">
+                </div>
+
+                <div id="logosLayer"></div>
+
+              </div>
+            </div>
+
           </div>
-          <div class="control-grid">
-            <label>Camera
-              <select id="cameraSelect"><option value="">Default camera</option></select>
-            </label>
-            <label>Microphone
-              <select id="micSelect"><option value="">Default microphone</option></select>
-            </label>
-            <label>Resolution
-              <select id="resolutionSelect">
-                <option value="1280x720">1280 × 720</option>
-                <option value="1920x1080">1920 × 1080</option>
-                <option value="640x480">640 × 480</option>
+
+          <!-- ONE CONTROL MENU -->
+
+          <aside class="controls">
+
+            <div class="control-section">
+
+              <h3>Graphic Mode</h3>
+
+              <div class="mode-grid">
+                <button class="mode-btn active" data-mode="one">One Day</button>
+                <button class="mode-btn" data-mode="multi">Multi-Day</button>
+                <button class="mode-btn" data-mode="week">7-Day</button>
+              </div>
+
+              <div style="height:8px"></div>
+
+              <div class="big-actions">
+                <button class="btn success" id="showWeatherBtn">
+                  👁 Show Weather
+                </button>
+                <button class="btn danger" id="hideWeatherBtn">
+                  Hide Weather
+                </button>
+              </div>
+
+            </div>
+
+            <div class="control-section">
+
+              <h3>Live Weather</h3>
+
+              <div class="field">
+                <label>Location</label>
+                <input id="locationInput" type="text" value="Birmingham, AL">
+              </div>
+
+              <div class="field">
+                <label>Temperature</label>
+                <input id="tempInput" type="text" value="72°">
+              </div>
+
+              <div class="field">
+                <label>Condition</label>
+                <input id="conditionInput" type="text" value="Sunny">
+              </div>
+
+              <div class="field">
+                <label>Weather Icon</label>
+                <select id="iconInput">
+                  <option value="☀️">☀️ Sunny</option>
+                  <option value="🌤️">🌤️ Partly Cloudy</option>
+                  <option value="☁️">☁️ Cloudy</option>
+                  <option value="🌧️">🌧️ Rain</option>
+                  <option value="⛈️">⛈️ Thunderstorm</option>
+                  <option value="❄️">❄️ Snow</option>
+                  <option value="🌫️">🌫️ Fog</option>
+                  <option value="🌙">🌙 Clear Night</option>
+                </select>
+              </div>
+
+            </div>
+
+            <div class="control-section">
+
+              <h3>Weather Environment</h3>
+
+              <div class="field">
+                <label>Background</label>
+                <select id="backgroundMode">
+                  <option value="auto">Auto from Weather</option>
+                  <option value="day">Day</option>
+                  <option value="night">Night</option>
+                  <option value="rain">Rain</option>
+                  <option value="snow">Snow</option>
+                  <option value="storm">Storm</option>
+                  <option value="cloudy">Cloudy</option>
+                  <option value="fog">Fog</option>
+                </select>
+              </div>
+
+              <div class="field">
+                <label>Animation</label>
+                <select id="animationMode">
+                  <option value="auto">Auto Weather</option>
+                  <option value="floating">Floating</option>
+                  <option value="rain">Rain</option>
+                  <option value="snow">Snow</option>
+                  <option value="clouds">Clouds</option>
+                  <option value="lightning">Lightning</option>
+                  <option value="wind">Wind</option>
+                  <option value="fog">Fog</option>
+                  <option value="pulse">Pulse</option>
+                  <option value="none">None</option>
+                </select>
+              </div>
+
+              <div class="field">
+                <label>Green Screen</label>
+                <select id="greenMode">
+                  <option value="off">Off</option>
+                  <option value="ready">Chroma-Key Ready</option>
+                  <option value="solid">Solid Green</option>
+                </select>
+              </div>
+
+            </div>
+
+            <div class="control-section">
+
+              <h3>Live Layers</h3>
+
+              <div id="layerManager"></div>
+
+            </div>
+
+          </aside>
+
+        </div>
+
+      </section>
+
+      <!-- CAMERA -->
+
+      <section class="tab" id="cameraTab">
+
+        <div class="card-grid">
+
+          <div class="card">
+            <h2>Camera</h2>
+
+            <div class="field">
+              <label>Camera Device</label>
+              <select id="cameraSelect">
+                <option value="">Select Camera</option>
               </select>
-            </label>
+            </div>
+
+            <div class="field">
+              <label>Microphone</label>
+              <select id="micSelect">
+                <option value="">Select Microphone</option>
+              </select>
+            </div>
+
+            <div class="device-row">
+
+              <button class="btn primary" id="startCameraBtn">
+                Start Camera
+              </button>
+
+              <button class="btn" id="stopCameraBtn">
+                Stop Camera
+              </button>
+
+            </div>
           </div>
-          <div class="button-row">
-            <button class="primary" id="cameraStart2">Start camera</button>
-            <button class="ghost" id="cameraStop2">Stop camera</button>
+
+          <div class="card">
+            <h2>Camera Size</h2>
+
+            <div class="field">
+              <label>Width <output id="cameraWidthOut">44%</output></label>
+              <input id="cameraWidth" type="range" min="15" max="75" value="44">
+            </div>
+
+            <div class="field">
+              <label>Height <output id="cameraHeightOut">68%</output></label>
+              <input id="cameraHeight" type="range" min="20" max="90" value="68">
+            </div>
+
+            <div class="field">
+              <label>Horizontal <output id="cameraXOut">50%</output></label>
+              <input id="cameraX" type="range" min="5" max="95" value="50">
+            </div>
+
+            <div class="field">
+              <label>Vertical <output id="cameraYOut">49%</output></label>
+              <input id="cameraY" type="range" min="5" max="95" value="49">
+            </div>
+
           </div>
-          <p class="hint">Camera access stays inside your browser. For OBS, use the Browser Source method described in the OBS tab.</p>
+
+          <div class="card">
+            <h2>Green Screen Workflow</h2>
+            <p>
+              Put the camera above the weather environment. In OBS, add the camera
+              source above the WeatherCast browser source and apply Chroma Key to
+              remove the green screen.
+            </p>
+
+            <div class="warning">
+              Camera permissions normally require HTTPS or localhost.
+            </div>
+          </div>
+
         </div>
-      </div>
 
-      <div class="tab hidden" id="graphics">
-  <div class="section-title"><p class="eyebrow">GRAPHICS</p><h1>Weather graphics</h1></div>
+      </section>
 
-  <div class="grid two">
-    <div class="card">
-      <h2>Current conditions</h2>
-      <div class="control-grid">
-        <label>Location<input id="locationInput" value="Your City"></label>
-        <label>Temperature<input id="tempInput" type="number" value="72"></label>
-        <label>Condition<input id="conditionInput" value="Partly Cloudy"></label>
-        <label>Icon
-          <select id="iconInput">
-            <option value="⛅">Partly cloudy</option><option value="☀️">Sunny</option>
-            <option value="🌧️">Rain</option><option value="⛈️">Thunderstorm</option>
-            <option value="❄️">Snow</option><option value="🌫️">Fog</option>
-          </select>
-        </label>
-      </div>
-      <button class="primary" id="applyWeather">Apply graphic</button>
+      <!-- GRAPHICS -->
+
+      <section class="tab" id="graphicsTab">
+
+        <div class="card-grid">
+
+          <div class="card">
+            <h2>Graphic Layout</h2>
+
+            <div class="field">
+              <label>Layout</label>
+              <select id="layoutSelect">
+                <option value="classic">Classic</option>
+                <option value="lower">TV Lower Third</option>
+                <option value="fullscreen">Full Screen</option>
+                <option value="strip">Forecast Strip</option>
+                <option value="wall">Weather Wall</option>
+                <option value="side">Side Panel</option>
+                <option value="bug">Corner Bug</option>
+                <option value="custom">Custom</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label>Graphic Width <output id="graphicWidthOut">82%</output></label>
+              <input id="graphicWidth" type="range" min="15" max="100" value="82">
+            </div>
+
+            <div class="field">
+              <label>Graphic Height <output id="graphicHeightOut">31%</output></label>
+              <input id="graphicHeight" type="range" min="10" max="90" value="31">
+            </div>
+
+            <div class="field">
+              <label>Graphic X <output id="graphicXOut">50%</output></label>
+              <input id="graphicX" type="range" min="0" max="100" value="50">
+            </div>
+
+            <div class="field">
+              <label>Graphic Y <output id="graphicYOut">28%</output></label>
+              <input id="graphicY" type="range" min="0" max="100" value="28">
+            </div>
+
+            <div class="field">
+              <label>Corner Radius <output id="radiusOut">14px</output></label>
+              <input id="radiusRange" type="range" min="0" max="35" value="14">
+            </div>
+
+          </div>
+
+          <div class="card">
+
+            <h2>Colors</h2>
+
+            <div class="device-row">
+
+              <div class="field">
+                <label>Background</label>
+                <input type="color" id="colorBackground" value="#07111f">
+              </div>
+
+              <div class="field">
+                <label>Card</label>
+                <input type="color" id="colorCard" value="#101a29">
+              </div>
+
+              <div class="field">
+                <label>Primary</label>
+                <input type="color" id="colorPrimary" value="#ffffff">
+              </div>
+
+              <div class="field">
+                <label>Secondary</label>
+                <input type="color" id="colorSecondary" value="#b8c8d8">
+              </div>
+
+              <div class="field">
+                <label>Accent</label>
+                <input type="color" id="colorAccent" value="#48a7ff">
+              </div>
+
+              <div class="field">
+                <label>Temperature</label>
+                <input type="color" id="colorTemp" value="#ffffff">
+              </div>
+
+              <div class="field">
+                <label>Condition</label>
+                <input type="color" id="colorCondition" value="#cbd7e2">
+              </div>
+
+              <div class="field">
+                <label>High</label>
+                <input type="color" id="colorHigh" value="#ffffff">
+              </div>
+
+              <div class="field">
+                <label>Low</label>
+                <input type="color" id="colorLow" value="#a8b9c9">
+              </div>
+
+            </div>
+
+          </div>
+
+          <div class="card">
+
+            <h2>Position Presets</h2>
+
+            <div class="mode-grid">
+              <button class="btn pos-btn" data-pos="tl">↖</button>
+              <button class="btn pos-btn" data-pos="tc">↑</button>
+              <button class="btn pos-btn" data-pos="tr">↗</button>
+              <button class="btn pos-btn" data-pos="ml">←</button>
+              <button class="btn pos-btn" data-pos="mc">●</button>
+              <button class="btn pos-btn" data-pos="mr">→</button>
+              <button class="btn pos-btn" data-pos="bl">↙</button>
+              <button class="btn pos-btn" data-pos="bc">↓</button>
+              <button class="btn pos-btn" data-pos="br">↘</button>
+            </div>
+
+            <p>
+              You can also drag the camera and graphic directly in the preview.
+            </p>
+
+          </div>
+
+          <div class="card">
+
+            <h2>Forecast</h2>
+
+            <div class="field">
+              <label>Days shown <output id="daysOut">7</output></label>
+              <input id="daysRange" type="range" min="2" max="7" value="7">
+            </div>
+
+            <div class="forecast-editor" id="forecastEditor"></div>
+
+          </div>
+
+          <div class="card">
+
+            <h2>Custom Text</h2>
+
+            <div class="field">
+              <label>Text</label>
+              <input id="customTextInput" type="text" value="LIVE WEATHER">
+            </div>
+
+            <div class="field">
+              <label>Font Size <output id="textSizeOut">28px</output></label>
+              <input id="textSize" type="range" min="10" max="100" value="28">
+            </div>
+
+            <div class="field">
+              <label>Weight</label>
+              <select id="textWeight">
+                <option value="400">Regular</option>
+                <option value="600">Semibold</option>
+                <option value="700">Bold</option>
+                <option value="800">Extra Bold</option>
+                <option value="900">Black</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label>Color</label>
+              <input type="color" id="textColor" value="#ffffff">
+            </div>
+
+          </div>
+
+        </div>
+
+      </section>
+
+      <!-- BRANDING -->
+
+      <section class="tab" id="brandingTab">
+
+        <div class="card-grid">
+
+          <div class="card">
+
+            <h2>Logos</h2>
+
+            <p>
+              Upload multiple logos. Each logo can be independently shown,
+              hidden, resized and positioned.
+            </p>
+
+            <input
+              id="logoUpload"
+              type="file"
+              accept=".png,.jpg,.jpeg,.webp,.svg,image/png,image/jpeg,image/webp,image/svg+xml"
+              multiple
+              hidden
+            >
+
+            <button class="btn primary" id="uploadLogoBtn">
+              + Add Logos
+            </button>
+
+            <div style="height:10px"></div>
+
+            <div id="logoManager"></div>
+
+          </div>
+
+          <div class="card">
+
+            <h2>Custom Weather Icons</h2>
+
+            <p>
+              Add your own PNG, JPG, WebP or SVG icons to the forecast icon library.
+            </p>
+
+            <input
+              id="iconUpload"
+              type="file"
+              accept=".png,.jpg,.jpeg,.webp,.svg,image/png,image/jpeg,image/webp,image/svg+xml"
+              multiple
+              hidden
+            >
+
+            <button class="btn primary" id="uploadIconBtn">
+              + Add Weather Icons
+            </button>
+
+            <div style="height:10px"></div>
+
+            <div id="iconLibrary"></div>
+
+          </div>
+
+        </div>
+
+      </section>
+
+      <!-- OBS -->
+
+      <section class="tab" id="obsTab">
+
+        <div class="card-grid">
+
+          <div class="card">
+
+            <h2>OBS Browser Source</h2>
+
+            <p>
+              Open the clean broadcast output in OBS as a Browser Source.
+              The control panel can continue operating separately.
+            </p>
+
+            <div class="obs-url">
+              <input id="obsUrl" readonly>
+              <button class="btn" id="copyObsUrl">Copy</button>
+            </div>
+
+            <div style="height:8px"></div>
+
+            <button class="btn primary" id="openOutputBtn">
+              Open Broadcast Output
+            </button>
+
+          </div>
+
+          <div class="card">
+
+            <h2>Output Settings</h2>
+
+            <div class="device-row">
+
+              <div class="field">
+                <label>Width</label>
+                <input id="obsWidth" type="number" value="1920">
+              </div>
+
+              <div class="field">
+                <label>Height</label>
+                <input id="obsHeight" type="number" value="1080">
+              </div>
+
+            </div>
+
+            <div class="field">
+              <label>FPS</label>
+              <select id="obsFps">
+                <option value="30">30 FPS</option>
+                <option value="60" selected>60 FPS</option>
+              </select>
+            </div>
+
+            <div class="toggle-row">
+              <span>Transparent Background</span>
+              <label class="switch">
+                <input type="checkbox" id="obsTransparent">
+                <span class="slider"></span>
+              </label>
+            </div>
+
+            <div class="toggle-row">
+              <span>Camera in Browser Output</span>
+              <label class="switch">
+                <input type="checkbox" id="obsCamera">
+                <span class="slider"></span>
+              </label>
+            </div>
+
+            <div class="toggle-row">
+              <span>Weather Graphic</span>
+              <label class="switch">
+                <input type="checkbox" id="obsWeather" checked>
+                <span class="slider"></span>
+              </label>
+            </div>
+
+            <div class="toggle-row">
+              <span>Animation</span>
+              <label class="switch">
+                <input type="checkbox" id="obsAnimation" checked>
+                <span class="slider"></span>
+              </label>
+            </div>
+
+          </div>
+
+          <div class="card">
+
+            <h2>Recommended Green-Screen Stack</h2>
+
+            <p>
+              1. Add WeatherCast as Browser Source.<br>
+              2. Keep the weather environment and forecast enabled.<br>
+              3. Add your camera as a separate Video Capture Device above it.<br>
+              4. Add Chroma Key to the camera source.<br>
+              5. Remove the green.<br>
+              6. Weather graphics remain underneath the keyed host.
+            </p>
+
+          </div>
+
+        </div>
+
+      </section>
+
     </div>
 
-    <div class="card">
-      <h2>Forecast display</h2>
-      <div class="control-grid">
-        <label>Forecast layout
-          <select id="forecastMode">
-            <option value="week">7-Day / Week</option>
-            <option value="days">Multi-Day</option>
-            <option value="current">Current Only</option>
-          </select>
-        </label>
-        <label>Days shown
-          <input id="daysShown" type="number" min="1" max="7" value="7">
-        </label>
-        <label>Accent <input type="color" id="accentInput" value="#49a6ff"></label>
-        <label>Overlay opacity <input type="range" id="opacityInput" min="20" max="100" value="92"></label>
-        <label>Position
-          <select id="positionInput"><option value="bottom">Bottom</option><option value="top">Top</option></select>
-        </label>
-      </div>
-      <button class="ghost" id="clearGraphic">Hide weather graphic</button>
-    </div>
-  </div>
-
-  <div class="card forecast-editor">
-    <div class="card-head">
-      <div><h2>7-day forecast editor</h2><p class="muted">Create a forecast graphic for several days or an entire week.</p></div>
-      <button class="primary" id="applyForecast">Apply forecast</button>
-    </div>
-    <div id="forecastRows"></div>
-  </div>
-
-  <div class="card">
-    <div class="card-head"><h2>Forecast preview</h2><span class="pill">BROADCAST GRAPHIC</span></div>
-    <div id="forecastPreview" class="forecast-preview"></div>
-  </div>
-</div>
-<div class="tab hidden" id="branding">
-        <div class="section-title"><p class="eyebrow">BRANDING</p><h1>Upload your station assets</h1></div>
-        <div class="grid two">
-          <div class="card upload-card">
-            <h2>Station logo</h2>
-            <p class="muted">PNG, JPG, SVG or WebP</p>
-            <input type="file" id="logoUpload" accept="image/*">
-            <div class="asset-preview"><img id="logoPreview" alt="Uploaded logo preview"><span id="logoEmpty">No logo uploaded</span></div>
-          </div>
-          <div class="card upload-card">
-            <h2>Weather icons</h2>
-            <p class="muted">Upload an icon set or individual images.</p>
-            <input type="file" id="iconUpload" accept="image/*" multiple>
-            <div id="iconList" class="asset-list">No custom icons yet</div>
-          </div>
-        </div>
-      </div>
-
-      <div class="tab hidden" id="obs">
-        <div class="section-title"><p class="eyebrow">OBS / STREAM</p><h1>Easy OBS setup</h1></div>
-        <div class="card">
-          <div class="obs-box">
-            <div class="obs-number">01</div>
-            <div><h2>Use Browser Source</h2><p>Host this folder on HTTPS, then add the public page URL as an OBS Browser Source.</p></div>
-          </div>
-          <div class="obs-box">
-            <div class="obs-number">02</div>
-            <div><h2>Set 1920 × 1080</h2><p>In OBS, set the Browser Source width to <b>1920</b> and height to <b>1080</b>.</p></div>
-          </div>
-          <div class="obs-box">
-            <div class="obs-number">03</div>
-            <div><h2>Control it here</h2><p>Keep this studio open in another browser tab. Changes are saved locally in this browser.</p></div>
-          </div>
-          <div class="notice">Tip: If you need the camera feed inside OBS, this page can display it through the browser source. Camera permissions must be granted to the page.</div>
-        </div>
-        <div class="card">
-          <h2>OBS page URL</h2>
-          <div class="url-row"><input id="pageUrl" readonly><button class="ghost" id="copyUrl">Copy</button></div>
-        </div>
-      </div>
-    </section>
   </main>
 
-  <script src="app.js"></script>
+</div>
+
+<script>
+"use strict";
+
+/* =========================================================
+   WEATHERCAST STUDIO v3
+   Single-file broadcast controller
+   ========================================================= */
+
+const STORAGE_KEY = "weathercastStudioV3";
+
+const builtInIcons = [
+  {value:"☀️",name:"Sunny"},
+  {value:"🌤️",name:"Partly Cloudy"},
+  {value:"☁️",name:"Cloudy"},
+  {value:"🌧️",name:"Rain"},
+  {value:"⛈️",name:"Thunderstorm"},
+  {value:"❄️",name:"Snow"},
+  {value:"🌫️",name:"Fog"},
+  {value:"🌙",name:"Clear Night"}
+];
+
+const defaultForecast = [
+  {day:"MON",icon:"☀️",high:"76°",low:"58°"},
+  {day:"TUE",icon:"🌤️",high:"74°",low:"57°"},
+  {day:"WED",icon:"☁️",high:"70°",low:"55°"},
+  {day:"THU",icon:"🌧️",high:"68°",low:"54°"},
+  {day:"FRI",icon:"⛈️",high:"73°",low:"59°"},
+  {day:"SAT",icon:"☀️",high:"79°",low:"61°"},
+  {day:"SUN",icon:"🌤️",high:"78°",low:"60°"}
+];
+
+const defaultState = {
+  weather:{
+    location:"Birmingham, AL",
+    temp:"72°",
+    condition:"Sunny",
+    icon:"☀️"
+  },
+
+  graphicMode:"one",
+  weatherVisible:true,
+
+  backgroundMode:"auto",
+  animationMode:"auto",
+  greenMode:"off",
+
+  layout:"classic",
+
+  camera:{
+    width:44,
+    height:68,
+    x:50,
+    y:49
+  },
+
+  forecast:{
+    days:7,
+    items:defaultForecast
+  },
+
+  graphic:{
+    width:82,
+    height:31,
+    x:50,
+    y:28,
+    radius:14
+  },
+
+  colors:{
+    background:"#07111f",
+    card:"#101a29",
+    primary:"#ffffff",
+    secondary:"#b8c8d8",
+    accent:"#48a7ff",
+    temp:"#ffffff",
+    condition:"#cbd7e2",
+    high:"#ffffff",
+    low:"#a8b9c9"
+  },
+
+  layers:{
+    background:{
+      visible:true,
+      opacity:100,
+      size:100,
+      x:50,
+      y:50,
+      color:"#07111f",
+      animation:"auto"
+    },
+
+    forecast:{
+      visible:true,
+      opacity:100,
+      size:100,
+      x:50,
+      y:28,
+      color:"#ffffff",
+      animation:"none"
+    },
+
+    camera:{
+      visible:true,
+      opacity:100,
+      size:100,
+      x:50,
+      y:49,
+      color:"#ffffff",
+      animation:"none"
+    },
+
+    temperature:{
+      visible:true,
+      opacity:100,
+      size:100,
+      x:8,
+      y:74,
+      color:"#ffffff",
+      animation:"none"
+    },
+
+    location:{
+      visible:true,
+      opacity:100,
+      size:100,
+      x:8,
+      y:86,
+      color:"#ffffff",
+      animation:"none"
+    },
+
+    condition:{
+      visible:true,
+      opacity:100,
+      size:100,
+      x:8,
+      y:93,
+      color:"#cbd7e2",
+      animation:"none"
+    },
+
+    lowerThird:{
+      visible:true,
+      opacity:100,
+      size:100,
+      x:50,
+      y:90,
+      color:"#ffffff",
+      animation:"none"
+    },
+
+    logo:{
+      visible:true,
+      opacity:100,
+      size:100,
+      x:50,
+      y:50,
+      color:"#ffffff",
+      animation:"none"
+    },
+
+    customText:{
+      visible:true,
+      opacity:100,
+      size:100,
+      x:50,
+      y:10,
+      color:"#ffffff",
+      animation:"none"
+    },
+
+    customImage:{
+      visible:true,
+      opacity:100,
+      size:100,
+      x:84,
+      y:12,
+      color:"#ffffff",
+      animation:"none"
+    },
+
+    animation:{
+      visible:true,
+      opacity:100,
+      size:100,
+      x:50,
+      y:50,
+      color:"#ffffff",
+      animation:"auto"
+    }
+  },
+
+  customText:{
+    text:"LIVE WEATHER",
+    fontSize:28,
+    weight:800,
+    color:"#ffffff"
+  },
+
+  customImage:{
+    src:""
+  },
+
+  logos:[],
+
+  icons:[],
+
+  obs:{
+    width:1920,
+    height:1080,
+    fps:60,
+    transparent:false,
+    camera:false,
+    weather:true,
+    animation:true
+  }
+};
+
+let state = loadState();
+let cameraStream = null;
+let channel = null;
+
+const $ = id => document.getElementById(id);
+const $$ = selector => Array.from(document.querySelectorAll(selector));
+
+function clone(obj){
+  return JSON.parse(JSON.stringify(obj));
+}
+
+function loadState(){
+  try{
+    const saved = localStorage.getItem(STORAGE_KEY);
+
+    if(!saved){
+      return clone(defaultState);
+    }
+
+    const parsed = JSON.parse(saved);
+
+    return deepMerge(clone(defaultState),parsed);
+
+  }catch(e){
+    return clone(defaultState);
+  }
+}
+
+function deepMerge(base,extra){
+  for(const key in extra){
+
+    if(
+      extra[key] &&
+      typeof extra[key] === "object" &&
+      !Array.isArray(extra[key]) &&
+      base[key] &&
+      typeof base[key] === "object"
+    ){
+      deepMerge(base[key],extra[key]);
+    }else{
+      base[key] = extra[key];
+    }
+  }
+
+  return base;
+}
+
+function saveState(broadcast=true){
+  try{
+    localStorage.setItem(STORAGE_KEY,JSON.stringify(state));
+  }catch(e){
+    console.warn("Could not save setup",e);
+  }
+
+  if(broadcast && channel){
+    try{
+      channel.postMessage({
+        type:"state",
+        state:state
+      });
+    }catch(e){}
+  }
+}
+
+function setupChannel(){
+
+  try{
+    channel = new BroadcastChannel("weathercast-studio-v3");
+
+    channel.onmessage = event => {
+
+      if(
+        event.data &&
+        event.data.type === "state" &&
+        event.data.state
+      ){
+
+        state = deepMerge(
+          clone(defaultState),
+          event.data.state
+        );
+
+        renderAll();
+      }
+    };
+
+  }catch(e){
+    channel = null;
+  }
+
+  window.addEventListener("storage",event => {
+
+    if(event.key !== STORAGE_KEY || !event.newValue) return;
+
+    try{
+      state = deepMerge(
+        clone(defaultState),
+        JSON.parse(event.newValue)
+      );
+
+      renderAll();
+
+    }catch(e){}
+  });
+}
+
+function escapeHTML(value){
+  return String(value ?? "")
+    .replace(/&/g,"&amp;")
+    .replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;")
+    .replace(/"/g,"&quot;")
+    .replace(/'/g,"&#039;");
+}
+
+function getCustomIcon(value){
+
+  if(!value || !value.startsWith("custom:")){
+    return null;
+  }
+
+  const id = value.slice(7);
+
+  return state.icons.find(icon => icon.id === id) || null;
+}
+
+function iconHTML(value){
+
+  const custom = getCustomIcon(value);
+
+  if(custom){
+
+    return `
+      <img
+        src="${escapeHTML(custom.src)}"
+        alt="${escapeHTML(custom.name)}"
+      >
+    `;
+  }
+
+  return escapeHTML(value || "☀️");
+}
+
+/* =========================================================
+   CLOCK
+   ========================================================= */
+
+function updateClock(){
+
+  $("clock").textContent =
+    new Date().toLocaleTimeString([],{
+      hour:"numeric",
+      minute:"2-digit",
+      second:"2-digit"
+    });
+
+}
+
+setInterval(updateClock,1000);
+updateClock();
+
+/* =========================================================
+   TABS
+   ========================================================= */
+
+$$(".nav button").forEach(button => {
+
+  button.addEventListener("click",() => {
+
+    const tab = button.dataset.tab;
+
+    $$(".nav button").forEach(b =>
+      b.classList.toggle("active",b === button)
+    );
+
+    $$(".tab").forEach(section =>
+      section.classList.remove("active")
+    );
+
+    $(tab + "Tab").classList.add("active");
+
+    const names = {
+      dashboard:"Live Weather Studio",
+      camera:"Camera Control",
+      graphics:"Graphics Designer",
+      branding:"Branding & Icons",
+      obs:"OBS Broadcast Output"
+    };
+
+    $("pageTitle").textContent = names[tab] || "WeatherCast Studio";
+
+  });
+
+});
+
+/* =========================================================
+   GRAPHIC MODE
+   ========================================================= */
+
+$$(".mode-btn[data-mode]").forEach(button => {
+
+  button.addEventListener("click",() => {
+
+    state.graphicMode = button.dataset.mode;
+
+    renderModeButtons();
+    renderStage();
+    saveState();
+
+  });
+
+});
+
+function renderModeButtons(){
+
+  $$(".mode-btn[data-mode]").forEach(button => {
+
+    button.classList.toggle(
+      "active",
+      button.dataset.mode === state.graphicMode
+    );
+
+  });
+
+}
+
+/* =========================================================
+   WEATHER INPUTS
+   ========================================================= */
+
+$("locationInput").addEventListener("input",e => {
+  state.weather.location = e.target.value;
+  renderWeather();
+  saveState();
+});
+
+$("tempInput").addEventListener("input",e => {
+  state.weather.temp = e.target.value;
+  renderWeather();
+  saveState();
+});
+
+$("conditionInput").addEventListener("input",e => {
+  state.weather.condition = e.target.value;
+  renderWeather();
+  renderBackground();
+  saveState();
+});
+
+$("iconInput").addEventListener("change",e => {
+  state.weather.icon = e.target.value;
+  renderWeather();
+  renderBackground();
+  saveState();
+});
+
+/* =========================================================
+   SHOW / HIDE
+   ========================================================= */
+
+$("showWeatherBtn").addEventListener("click",() => {
+
+  state.weatherVisible = true;
+
+  renderStage();
+  saveState();
+
+});
+
+$("hideWeatherBtn").addEventListener("click",() => {
+
+  state.weatherVisible = false;
+
+  renderStage();
+  saveState();
+
+});
+
+/* =========================================================
+   GREEN SCREEN
+   ========================================================= */
+
+$("greenMode").addEventListener("change",e => {
+
+  state.greenMode = e.target.value;
+
+  renderBackground();
+  saveState();
+
+});
+
+/* =========================================================
+   BACKGROUND
+   ========================================================= */
+
+$("backgroundMode").addEventListener("change",e => {
+
+  state.backgroundMode = e.target.value;
+
+  renderBackground();
+  saveState();
+
+});
+
+$("animationMode").addEventListener("change",e => {
+
+  state.animationMode = e.target.value;
+
+  renderBackground();
+  renderStage();
+  saveState();
+
+});
+
+function determineWeatherType(){
+
+  const text = (
+    state.weather.condition +
+    " " +
+    state.weather.icon
+  ).toLowerCase();
+
+  if(
+    text.includes("thunder") ||
+    text.includes("storm") ||
+    text.includes("⛈")
+  ){
+    return "storm";
+  }
+
+  if(
+    text.includes("rain") ||
+    text.includes("shower") ||
+    text.includes("🌧")
+  ){
+    return "rain";
+  }
+
+  if(
+    text.includes("snow") ||
+    text.includes("❄")
+  ){
+    return "snow";
+  }
+
+  if(
+    text.includes("fog") ||
+    text.includes("mist") ||
+    text.includes("🌫")
+  ){
+    return "fog";
+  }
+
+  if(
+    text.includes("cloud") ||
+    text.includes("overcast") ||
+    text.includes("☁")
+  ){
+    return "cloudy";
+  }
+
+  if(
+    text.includes("night") ||
+    text.includes("clear night") ||
+    text.includes("🌙")
+  ){
+    return "night";
+  }
+
+  return "day";
+}
+
+function renderBackground(){
+
+  const bg = $("weatherBg");
+
+  const type =
+    state.backgroundMode === "auto"
+      ? determineWeatherType()
+      : state.backgroundMode;
+
+  bg.className = "weather-bg " + type;
+
+  $("rainLayer").innerHTML = "";
+  $("snowLayer").innerHTML = "";
+  $("windLayer").innerHTML = "";
+  $("fogLayer").innerHTML = "";
+
+  const animation =
+    state.animationMode === "auto"
+      ? type
+      : state.animationMode;
+
+  if(state.obs.animation === false){
+    return;
+  }
+
+  if(animation === "rain" || type === "rain"){
+
+    for(let i=0;i<65;i++){
+
+      const drop = document.createElement("span");
+
+      drop.className = "rain-drop";
+
+      drop.style.left = Math.random()*100 + "%";
+      drop.style.animationDuration =
+        (0.55 + Math.random()*0.8) + "s";
+
+      drop.style.animationDelay =
+        (-Math.random()*2) + "s";
+
+      $("rainLayer").appendChild(drop);
+    }
+  }
+
+  if(animation === "snow" || type === "snow"){
+
+    for(let i=0;i<40;i++){
+
+      const flake = document.createElement("span");
+
+      flake.className = "snow-flake";
+      flake.textContent = "•";
+
+      flake.style.left = Math.random()*100 + "%";
+
+      flake.style.animationDuration =
+        (5 + Math.random()*8) + "s";
+
+      flake.style.animationDelay =
+        (-Math.random()*10) + "s";
+
+      $("snowLayer").appendChild(flake);
+    }
+  }
+
+  if(animation === "wind" || animation === "floating"){
+
+    for(let i=0;i<22;i++){
+
+      const line = document.createElement("span");
+
+      line.className = "wind-line";
+
+      line.style.top =
+        (5 + Math.random()*90) + "%";
+
+      line.style.width =
+        (5 + Math.random()*18) + "%";
+
+      line.style.animationDuration =
+        (3 + Math.random()*5) + "s";
+
+      line.style.animationDelay =
+        (-Math.random()*5) + "s";
+
+      $("windLayer").appendChild(line);
+    }
+  }
+
+  if(animation === "fog" || type === "fog"){
+
+    for(let i=0;i<7;i++){
+
+      const puff = document.createElement("span");
+
+      puff.className = "fog-puff";
+
+      puff.style.left = Math.random()*80 + "%";
+      puff.style.top = Math.random()*80 + "%";
+      puff.style.animationDelay =
+        (-Math.random()*10) + "s";
+
+      $("fogLayer").appendChild(puff);
+    }
+  }
+
+  $("lightningLayer").style.display =
+    animation === "lightning" || type === "storm"
+      ? "block"
+      : "none";
+}
+
+/* =========================================================
+   WEATHER RENDER
+   ========================================================= */
+
+function renderWeather(){
+
+  $("currentLocation").textContent = state.weather.location;
+  $("currentTemp").textContent = state.weather.temp;
+  $("currentCondition").textContent = state.weather.condition;
+  $("currentIcon").innerHTML = iconHTML(state.weather.icon);
+
+  $("ltLocation").textContent = state.weather.location;
+  $("ltTemp").textContent = state.weather.temp;
+  $("ltCondition").textContent =
+    state.weather.condition + " • Current Conditions";
+
+  $("locationInput").value = state.weather.location;
+  $("tempInput").value = state.weather.temp;
+  $("conditionInput").value = state.weather.condition;
+  $("iconInput").value = state.weather.icon;
+
+  renderForecast();
+}
+
+/* =========================================================
+   FORECAST
+   ========================================================= */
+
+function renderForecast(){
+
+  const grid = $("forecastGrid");
+
+  const count =
+    state.graphicMode === "week"
+      ? 7
+      : Math.min(7,Math.max(2,state.forecast.days));
+
+  const items = state.forecast.items.slice(0,count);
+
+  grid.className =
+    "forecast-grid " +
+    (state.graphicMode === "week" ? "week" : "multi");
+
+  grid.style.gridTemplateColumns =
+    `repeat(${items.length},minmax(0,1fr))`;
+
+  $("forecastTitle").textContent =
+    state.graphicMode === "one"
+      ? ""
+      : state.graphicMode === "week"
+        ? "NEXT 7 DAYS"
+        : "EXTENDED FORECAST";
+
+  grid.innerHTML = items.map(item => `
+
+    <div class="forecast-card">
+
+      <div class="day">
+        ${escapeHTML(item.day)}
+      </div>
+
+      <div class="icon">
+        ${iconHTML(item.icon)}
+      </div>
+
+      <div class="temps">
+        <span class="high">
+          ${escapeHTML(item.high)}
+        </span>
+        /
+        <span class="low">
+          ${escapeHTML(item.low)}
+        </span>
+      </div>
+
+    </div>
+
+  `).join("");
+
+  renderForecastEditor();
+}
+
+function renderForecastEditor(){
+
+  const container = $("forecastEditor");
+
+  container.innerHTML = state.forecast.items.map((item,index) => `
+
+    <div class="forecast-edit-row">
+
+      <input
+        type="text"
+        data-f-day="${index}"
+        value="${escapeHTML(item.day)}"
+      >
+
+      <select data-f-icon="${index}">
+        ${forecastIconOptions(item.icon)}
+      </select>
+
+      <input
+        type="text"
+        data-f-high="${index}"
+        value="${escapeHTML(item.high)}"
+        placeholder="High"
+      >
+
+      <input
+        type="text"
+        data-f-low="${index}"
+        value="${escapeHTML(item.low)}"
+        placeholder="Low"
+      >
+
+    </div>
+
+  `).join("");
+
+  container.querySelectorAll("[data-f-day]").forEach(input => {
+
+    input.addEventListener("input",e => {
+
+      const index = Number(e.target.dataset.fDay);
+
+      state.forecast.items[index].day = e.target.value;
+
+      renderForecast();
+      saveState();
+
+    });
+
+  });
+
+  container.querySelectorAll("[data-f-icon]").forEach(input => {
+
+    input.addEventListener("change",e => {
+
+      const index = Number(e.target.dataset.fIcon);
+
+      state.forecast.items[index].icon = e.target.value;
+
+      renderForecast();
+      saveState();
+
+    });
+
+  });
+
+  container.querySelectorAll("[data-f-high]").forEach(input => {
+
+    input.addEventListener("input",e => {
+
+      const index = Number(e.target.dataset.fHigh);
+
+      state.forecast.items[index].high = e.target.value;
+
+      renderForecast();
+      saveState();
+
+    });
+
+  });
+
+  container.querySelectorAll("[data-f-low]").forEach(input => {
+
+    input.addEventListener("input",e => {
+
+      const index = Number(e.target.dataset.fLow);
+
+      state.forecast.items[index].low = e.target.value;
+
+      renderForecast();
+      saveState();
+
+    });
+
+  });
+
+}
+
+function forecastIconOptions(selected){
+
+  let html = "";
+
+  builtInIcons.forEach(icon => {
+
+    html += `
+      <option
+        value="${escapeHTML(icon.value)}"
+        ${selected === icon.value ? "selected" : ""}
+      >
+        ${escapeHTML(icon.value)} ${escapeHTML(icon.name)}
+      </option>
+    `;
+
+  });
+
+  state.icons.forEach(icon => {
+
+    const value = "custom:" + icon.id;
+
+    html += `
+      <option
+        value="${escapeHTML(value)}"
+        ${selected === value ? "selected" : ""}
+      >
+        🖼 ${escapeHTML(icon.name)}
+      </option>
+    `;
+
+  });
+
+  return html;
+}
+
+$("daysRange").addEventListener("input",e => {
+
+  state.forecast.days = Number(e.target.value);
+
+  $("daysOut").textContent = state.forecast.days;
+
+  renderForecast();
+  saveState();
+
+});
+
+/* =========================================================
+   GRAPHIC POSITION
+   ========================================================= */
+
+function updateGraphicPosition(){
+
+  const layer = $("forecastLayer");
+
+  layer.style.left = state.graphic.x + "%";
+  layer.style.top = state.graphic.y + "%";
+  layer.style.width = state.graphic.width + "%";
+  layer.style.height = state.graphic.height + "%";
+
+  layer.style.borderRadius = state.graphic.radius + "px";
+
+  $("graphicWidth").value = state.graphic.width;
+  $("graphicHeight").value = state.graphic.height;
+  $("graphicX").value = state.graphic.x;
+  $("graphicY").value = state.graphic.y;
+  $("radiusRange").value = state.graphic.radius;
+
+  $("graphicWidthOut").textContent =
+    state.graphic.width + "%";
+
+  $("graphicHeightOut").textContent =
+    state.graphic.height + "%";
+
+  $("graphicXOut").textContent =
+    state.graphic.x + "%";
+
+  $("graphicYOut").textContent =
+    state.graphic.y + "%";
+
+  $("radiusOut").textContent =
+    state.graphic.radius + "px";
+}
+
+function wireRange(id,key,out){
+
+  $(id).addEventListener("input",e => {
+
+    state.graphic[key] = Number(e.target.value);
+
+    $(out).textContent =
+      e.target.value + (key === "radius" ? "px" : "%");
+
+    updateGraphicPosition();
+    saveState();
+
+  });
+
+}
+
+wireRange("graphicWidth","width","graphicWidthOut");
+wireRange("graphicHeight","height","graphicHeightOut");
+wireRange("graphicX","x","graphicXOut");
+wireRange("graphicY","y","graphicYOut");
+wireRange("radiusRange","radius","radiusOut");
+
+/* =========================================================
+   LAYOUT PRESETS
+   ========================================================= */
+
+$("layoutSelect").addEventListener("change",e => {
+
+  state.layout = e.target.value;
+
+  applyLayoutPreset();
+  renderStage();
+  saveState();
+
+});
+
+function applyLayoutPreset(){
+
+  const presets = {
+
+    classic:{
+      x:50,y:28,width:82,height:31
+    },
+
+    lower:{
+      x:50,y:78,width:92,height:25
+    },
+
+    fullscreen:{
+      x:50,y:50,width:88,height:72
+    },
+
+    strip:{
+      x:50,y:79,width:96,height:27
+    },
+
+    wall:{
+      x:50,y:48,width:90,height:68
+    },
+
+    side:{
+      x:78,y:50,width:38,height:76
+    },
+
+    bug:{
+      x:82,y:18,width:30,height:19
+    },
+
+    custom:null
+  };
+
+  const preset = presets[state.layout];
+
+  if(preset){
+
+    state.graphic.x = preset.x;
+    state.graphic.y = preset.y;
+    state.graphic.width = preset.width;
+    state.graphic.height = preset.height;
+
+  }
+
+  $("layoutSelect").value = state.layout;
+
+  updateGraphicPosition();
+}
+
+/* =========================================================
+   ALIGNMENT
+   ========================================================= */
+
+$$(".pos-btn").forEach(button => {
+
+  button.addEventListener("click",() => {
+
+    const pos = button.dataset.pos;
+
+    const x =
+      pos.endsWith("l") ? 12 :
+      pos.endsWith("c") ? 50 : 88;
+
+    const y =
+      pos.startsWith("t") ? 16 :
+      pos.startsWith("m") ? 50 : 84;
+
+    state.graphic.x = x;
+    state.graphic.y = y;
+
+    state.layout = "custom";
+
+    updateGraphicPosition();
+
+    saveState();
+
+  });
+
+});
+
+/* =========================================================
+   CAMERA
+   ========================================================= */
+
+function renderCamera(){
+
+  const layer = $("cameraLayer");
+
+  layer.style.width = state.camera.width + "%";
+  layer.style.height = state.camera.height + "%";
+  layer.style.left = state.camera.x + "%";
+  layer.style.top = state.camera.y + "%";
+
+  $("cameraWidth").value = state.camera.width;
+  $("cameraHeight").value = state.camera.height;
+  $("cameraX").value = state.camera.x;
+  $("cameraY").value = state.camera.y;
+
+  $("cameraWidthOut").textContent =
+    state.camera.width + "%";
+
+  $("cameraHeightOut").textContent =
+    state.camera.height + "%";
+
+  $("cameraXOut").textContent =
+    state.camera.x + "%";
+
+  $("cameraYOut").textContent =
+    state.camera.y + "%";
+}
+
+[
+  ["cameraWidth","width","cameraWidthOut"],
+  ["cameraHeight","height","cameraHeightOut"],
+  ["cameraX","x","cameraXOut"],
+  ["cameraY","y","cameraYOut"]
+].forEach(([id,key,out]) => {
+
+  $(id).addEventListener("input",e => {
+
+    state.camera[key] = Number(e.target.value);
+
+    renderCamera();
+    saveState();
+
+  });
+
+});
+
+/* =========================================================
+   DRAGGING
+   ========================================================= */
+
+function makeDraggable(element,getPosition,setPosition){
+
+  let dragging = false;
+  let startX = 0;
+  let startY = 0;
+  let original = null;
+
+  element.addEventListener("pointerdown",event => {
+
+    if(event.button !== undefined && event.button !== 0) return;
+
+    dragging = true;
+
+    element.classList.add("dragging");
+
+    try{
+      element.setPointerCapture(event.pointerId);
+    }catch(e){}
+
+    startX = event.clientX;
+    startY = event.clientY;
+
+    original = getPosition();
+
+    event.preventDefault();
+
+  });
+
+  element.addEventListener("pointermove",event => {
+
+    if(!dragging) return;
+
+    const stage = $("stage");
+    const rect = stage.getBoundingClientRect();
+
+    const dx =
+      ((event.clientX - startX) / rect.width) * 100;
+
+    const dy =
+      ((event.clientY - startY) / rect.height) * 100;
+
+    setPosition(
+      Math.max(0,Math.min(100,original.x + dx)),
+      Math.max(0,Math.min(100,original.y + dy))
+    );
+
+  });
+
+  const end = () => {
+
+    if(!dragging) return;
+
+    dragging = false;
+    element.classList.remove("dragging");
+
+    saveState();
+
+  };
+
+  element.addEventListener("pointerup",end);
+  element.addEventListener("pointercancel",end);
+}
+
+makeDraggable(
+  $("cameraLayer"),
+  () => ({
+    x:state.camera.x,
+    y:state.camera.y
+  }),
+  (x,y) => {
+
+    state.camera.x = x;
+    state.camera.y = y;
+
+    renderCamera();
+
+  }
+);
+
+makeDraggable(
+  $("forecastLayer"),
+  () => ({
+    x:state.graphic.x,
+    y:state.graphic.y
+  }),
+  (x,y) => {
+
+    state.graphic.x = x;
+    state.graphic.y = y;
+    state.layout = "custom";
+
+    updateGraphicPosition();
+
+  }
+);
+
+makeDraggable(
+  $("lowerThird"),
+  () => ({
+    x:state.layers.lowerThird.x,
+    y:state.layers.lowerThird.y
+  }),
+  (x,y) => {
+
+    state.layers.lowerThird.x = x;
+    state.layers.lowerThird.y = y;
+
+    renderLayerPositions();
+
+  }
+);
+
+makeDraggable(
+  $("customText"),
+  () => ({
+    x:state.layers.customText.x,
+    y:state.layers.customText.y
+  }),
+  (x,y) => {
+
+    state.layers.customText.x = x;
+    state.layers.customText.y = y;
+
+    renderLayerPositions();
+
+  }
+);
+
+makeDraggable(
+  $("customImage"),
+  () => ({
+    x:state.layers.customImage.x,
+    y:state.layers.customImage.y
+  }),
+  (x,y) => {
+
+    state.layers.customImage.x = x;
+    state.layers.customImage.y = y;
+
+    renderLayerPositions();
+
+  }
+);
+
+/* =========================================================
+   COLORS
+   ========================================================= */
+
+const colorMap = {
+  colorBackground:"background",
+  colorCard:"card",
+  colorPrimary:"primary",
+  colorSecondary:"secondary",
+  colorAccent:"accent",
+  colorTemp:"temp",
+  colorCondition:"condition",
+  colorHigh:"high",
+  colorLow:"low"
+};
+
+Object.entries(colorMap).forEach(([id,key]) => {
+
+  $(id).addEventListener("input",e => {
+
+    state.colors[key] = e.target.value;
+
+    renderColors();
+    saveState();
+
+  });
+
+});
+
+function hexToRgba(hex,alpha){
+
+  hex = hex.replace("#","");
+
+  const r = parseInt(hex.substring(0,2),16);
+  const g = parseInt(hex.substring(2,4),16);
+  const b = parseInt(hex.substring(4,6),16);
+
+  return `rgba(${r},${g},${b},${alpha})`;
+}
+
+function renderColors(){
+
+  document.documentElement.style.setProperty(
+    "--accent",
+    state.colors.accent
+  );
+
+  document.documentElement.style.setProperty(
+    "--high",
+    state.colors.high
+  );
+
+  document.documentElement.style.setProperty(
+    "--low",
+    state.colors.low
+  );
+
+  document.documentElement.style.setProperty(
+    "--condition",
+    state.colors.condition
+  );
+
+  $("colorBackground").value = state.colors.background;
+  $("colorCard").value = state.colors.card;
+  $("colorPrimary").value = state.colors.primary;
+  $("colorSecondary").value = state.colors.secondary;
+  $("colorAccent").value = state.colors.accent;
+  $("colorTemp").value = state.colors.temp;
+  $("colorCondition").value = state.colors.condition;
+  $("colorHigh").value = state.colors.high;
+  $("colorLow").value = state.colors.low;
+
+  $("currentLayer").style.background =
+    hexToRgba(state.colors.card,.88);
+
+  $("currentLayer").style.color =
+    state.colors.primary;
+
+  $("currentTemp").style.color =
+    state.colors.temp;
+
+  $("currentCondition").style.color =
+    state.colors.condition;
+
+  $("lowerThird").style.borderLeftColor =
+    state.colors.accent;
+
+  $("lowerThird").style.color =
+    state.colors.primary;
+
+  document.querySelectorAll(".forecast-card").forEach(card => {
+
+    card.style.background =
+      hexToRgba(state.colors.card,.78);
+
+    card.style.color =
+      state.colors.primary;
+
+  });
+}
+
+/* =========================================================
+   CUSTOM TEXT
+   ========================================================= */
+
+$("customTextInput").addEventListener("input",e => {
+
+  state.customText.text = e.target.value;
+
+  renderCustomText();
+  saveState();
+
+});
+
+$("textSize").addEventListener("input",e => {
+
+  state.customText.fontSize = Number(e.target.value);
+
+  renderCustomText();
+  saveState();
+
+});
+
+$("textWeight").addEventListener("change",e => {
+
+  state.customText.weight = Number(e.target.value);
+
+  renderCustomText();
+  saveState();
+
+});
+
+$("textColor").addEventListener("input",e => {
+
+  state.customText.color = e.target.value;
+
+  renderCustomText();
+  saveState();
+
+});
+
+function renderCustomText(){
+
+  $("customText").textContent =
+    state.customText.text;
+
+  $("customText").style.fontSize =
+    state.customText.fontSize + "px";
+
+  $("customText").style.fontWeight =
+    state.customText.weight;
+
+  $("customText").style.color =
+    state.customText.color;
+
+  $("customTextInput").value =
+    state.customText.text;
+
+  $("textSize").value =
+    state.customText.fontSize;
+
+  $("textSizeOut").textContent =
+    state.customText.fontSize + "px";
+
+  $("textWeight").value =
+    state.customText.weight;
+
+  $("textColor").value =
+    state.customText.color;
+}
+
+/* =========================================================
+   CUSTOM IMAGE
+   ========================================================= */
+
+function renderCustomImage(){
+
+  $("customImageImg").src =
+    state.customImage.src || "";
+
+}
+
+/* =========================================================
+   LAYER MANAGER
+   ========================================================= */
+
+const layerDefinitions = [
+  ["background","🌤️ Weather Background"],
+  ["forecast","📊 Forecast"],
+  ["camera","🎥 Camera"],
+  ["temperature","🌡️ Temperature"],
+  ["location","📍 Location"],
+  ["condition","☁️ Condition"],
+  ["lowerThird","📰 Lower Third"],
+  ["logo","🏷️ Station Logo"],
+  ["customText","✏️ Custom Text"],
+  ["customImage","🖼️ Custom Image"],
+  ["animation","✨ Weather Animation"]
+];
+
+function renderLayerManager(){
+
+  const manager = $("layerManager");
+
+  manager.innerHTML = layerDefinitions.map(([key,name]) => {
+
+    const layer = state.layers[key];
+
+    return `
+
+      <div class="layer-item">
+
+        <div class="layer-head">
+
+          <label class="switch">
+            <input
+              type="checkbox"
+              data-layer-visible="${key}"
+              ${layer.visible ? "checked" : ""}
+            >
+            <span class="slider"></span>
+          </label>
+
+          <strong>${name}</strong>
+
+        </div>
+
+        <div class="layer-options">
+
+          <div class="field">
+            <label>Opacity</label>
+            <input
+              type="range"
+              min="0"
+              max="100"
+              value="${layer.opacity}"
+              data-layer-opacity="${key}"
+            >
+          </div>
+
+          <div class="field">
+            <label>Size</label>
+            <input
+              type="range"
+              min="25"
+              max="200"
+              value="${layer.size}"
+              data-layer-size="${key}"
+            >
+          </div>
+
+          <div class="field">
+            <label>X</label>
+            <input
+              type="range"
+              min="0"
+              max="100"
+              value="${layer.x}"
+              data-layer-x="${key}"
+            >
+          </div>
+
+          <div class="field">
+            <label>Y</label>
+            <input
+              type="range"
+              min="0"
+              max="100"
+              value="${layer.y}"
+              data-layer-y="${key}"
+            >
+          </div>
+
+          <div class="field full">
+            <label>Animation</label>
+
+            <select data-layer-animation="${key}">
+              <option value="none" ${layer.animation==="none"?"selected":""}>
+                None
+              </option>
+              <option value="pulse" ${layer.animation==="pulse"?"selected":""}>
+                Pulse
+              </option>
+              <option value="slide" ${layer.animation==="slide"?"selected":""}>
+                Slide In
+              </option>
+              <option value="floating" ${layer.animation==="floating"?"selected":""}>
+                Floating
+              </option>
+            </select>
+
+          </div>
+
+          <div class="field full">
+            <label>Layer Color</label>
+            <input
+              type="color"
+              value="${layer.color}"
+              data-layer-color="${key}"
+            >
+          </div>
+
+        </div>
+
+      </div>
+
+    `;
+
+  }).join("");
+
+  bindLayerControls();
+}
+
+function bindLayerControls(){
+
+  $$("[data-layer-visible]").forEach(input => {
+
+    input.addEventListener("change",e => {
+
+      const key = e.target.dataset.layerVisible;
+
+      state.layers[key].visible =
+        e.target.checked;
+
+      renderLayerPositions();
+      saveState();
+
+    });
+
+  });
+
+  $$("[data-layer-opacity]").forEach(input => {
+
+    input.addEventListener("input",e => {
+
+      const key = e.target.dataset.layerOpacity;
+
+      state.layers[key].opacity =
+        Number(e.target.value);
+
+      renderLayerPositions();
+      saveState();
+
+    });
+
+  });
+
+  $$("[data-layer-size]").forEach(input => {
+
+    input.addEventListener("input",e => {
+
+      const key = e.target.dataset.layerSize;
+
+      state.layers[key].size =
+        Number(e.target.value);
+
+      renderLayerPositions();
+      saveState();
+
+    });
+
+  });
+
+  $$("[data-layer-x]").forEach(input => {
+
+    input.addEventListener("input",e => {
+
+      const key = e.target.dataset.layerX;
+
+      state.layers[key].x =
+        Number(e.target.value);
+
+      renderLayerPositions();
+      saveState();
+
+    });
+
+  });
+
+  $$("[data-layer-y]").forEach(input => {
+
+    input.addEventListener("input",e => {
+
+      const key = e.target.dataset.layerY;
+
+      state.layers[key].y =
+        Number(e.target.value);
+
+      renderLayerPositions();
+      saveState();
+
+    });
+
+  });
+
+  $$("[data-layer-animation]").forEach(input => {
+
+    input.addEventListener("change",e => {
+
+      const key = e.target.dataset.layerAnimation;
+
+      state.layers[key].animation =
+        e.target.value;
+
+      renderLayerPositions();
+      saveState();
+
+    });
+
+  });
+
+  $$("[data-layer-color]").forEach(input => {
+
+    input.addEventListener("input",e => {
+
+      const key = e.target.dataset.layerColor;
+
+      state.layers[key].color =
+        e.target.value;
+
+      renderLayerPositions();
+      saveState();
+
+    });
+
+  });
+}
+
+/* =========================================================
+   LAYER RENDERING
+   ========================================================= */
+
+function applyLayerStyle(element,key){
+
+  const layer = state.layers[key];
+
+  if(!element || !layer) return;
+
+  element.style.opacity =
+    layer.visible
+      ? layer.opacity / 100
+      : 0;
+
+  element.style.pointerEvents =
+    layer.visible
+      ? "auto"
+      : "none";
+
+  element.style.setProperty(
+    "--layer-color",
+    layer.color
+  );
+
+  element.classList.remove(
+    "pulse-animation",
+    "slide-animation"
+  );
+
+  if(layer.animation === "pulse"){
+    element.classList.add("pulse-animation");
+  }
+
+  if(layer.animation === "slide"){
+    element.classList.add("slide-animation");
+  }
+}
+
+function renderLayerPositions(){
+
+  /* Camera */
+
+  state.camera.width =
+    Math.max(15,Math.min(75,state.camera.width));
+
+  state.camera.height =
+    Math.max(20,Math.min(90,state.camera.height));
+
+  $("cameraLayer").style.left =
+    state.camera.x + "%";
+
+  $("cameraLayer").style.top =
+    state.camera.y + "%";
+
+  $("cameraLayer").style.width =
+    state.camera.width + "%";
+
+  $("cameraLayer").style.height =
+    state.camera.height + "%";
+
+  applyLayerStyle($("cameraLayer"),"camera");
+
+  /* Forecast */
+
+  $("forecastLayer").style.left =
+    state.graphic.x + "%";
+
+  $("forecastLayer").style.top =
+    state.graphic.y + "%";
+
+  $("forecastLayer").style.width =
+    state.graphic.width + "%";
+
+  $("forecastLayer").style.height =
+    state.graphic.height + "%";
+
+  applyLayerStyle($("forecastLayer"),"forecast");
+
+  /* Current pieces */
+
+  const temp = $("currentTemp");
+  const location = $("currentLocation");
+  const condition = $("currentCondition");
+
+  applyLayerStyle(temp,"temperature");
+  applyLayerStyle(location,"location");
+  applyLayerStyle(condition,"condition");
+
+  const tempLayer = state.layers.temperature;
+
+  temp.style.transform =
+    `scale(${tempLayer.size/100})`;
+
+  const locationLayer = state.layers.location;
+
+  location.style.transform =
+    `scale(${locationLayer.size/100})`;
+
+  const conditionLayer = state.layers.condition;
+
+  condition.style.transform =
+    `scale(${conditionLayer.size/100})`;
+
+  /* Current graphic */
+
+  $("currentLayer").style.display =
+    state.graphicMode === "one" &&
+    state.weatherVisible
+      ? "grid"
+      : "none";
+
+  /* Forecast */
+
+  $("forecastLayer").style.display =
+    state.graphicMode === "one" ||
+    !state.weatherVisible ||
+    !state.layers.forecast.visible
+      ? "none"
+      : "block";
+
+  /* Lower third */
+
+  const lower = $("lowerThird");
+
+  lower.style.left =
+    state.layers.lowerThird.x + "%";
+
+  lower.style.top =
+    state.layers.lowerThird.y + "%";
+
+  lower.style.bottom = "auto";
+
+  lower.style.transform =
+    "translate(-50%,-50%)";
+
+  lower.style.width =
+    (72 * state.layers.lowerThird.size / 100) + "%";
+
+  applyLayerStyle(lower,"lowerThird");
+
+  /* Custom text */
+
+  const customText = $("customText");
+
+  customText.style.left =
+    state.layers.customText.x + "%";
+
+  customText.style.top =
+    state.layers.customText.y + "%";
+
+  customText.style.transform =
+    `translate(-50%,-50%) scale(${state.layers.customText.size/100})`;
+
+  applyLayerStyle(customText,"customText");
+
+  /* Custom image */
+
+  const customImage = $("customImage");
+
+  customImage.style.left =
+    state.layers.customImage.x + "%";
+
+  customImage.style.top =
+    state.layers.customImage.y + "%";
+
+  customImage.style.transform =
+    `translate(-50%,-50%) scale(${state.layers.customImage.size/100})`;
+
+  applyLayerStyle(customImage,"customImage");
+
+  /* Background */
+
+  applyLayerStyle($("weatherBg"),"background");
+
+  /* Animation */
+
+  const animationVisible =
+    state.layers.animation.visible &&
+    state.obs.animation;
+
+  $("rainLayer").style.opacity =
+    animationVisible ? state.layers.animation.opacity/100 : 0;
+
+  $("snowLayer").style.opacity =
+    animationVisible ? state.layers.animation.opacity/100 : 0;
+
+  $("windLayer").style.opacity =
+    animationVisible ? state.layers.animation.opacity/100 : 0;
+
+  $("fogLayer").style.opacity =
+    animationVisible ? state.layers.animation.opacity/100 : 0;
+
+  $("lightningLayer").style.opacity =
+    animationVisible ? state.layers.animation.opacity/100 : 0;
+
+  renderLogos();
+}
+
+function renderStage(){
+
+  $("stage").classList.toggle(
+    "green-mode",
+    state.greenMode !== "off"
+  );
+
+  $("stage").style.setProperty(
+    "--accent",
+    state.colors.accent
+  );
+
+  const weatherVisible =
+    state.weatherVisible &&
+    state.obs.weather;
+
+  $("currentLayer").style.display =
+    state.graphicMode === "one" && weatherVisible
+      ? "grid"
+      : "none";
+
+  $("forecastLayer").style.display =
+    state.graphicMode !== "one" && weatherVisible
+      ? "block"
+      : "none";
+
+  $("lowerThird").style.display =
+    state.layers.lowerThird.visible
+      ? "flex"
+      : "none";
+
+  $("cameraLayer").style.display =
+    state.layers.camera.visible &&
+    (
+      !isOutputMode() ||
+      state.obs.camera
+    )
+      ? "block"
+      : "none";
+
+  updateGraphicPosition();
+  renderLayerPositions();
+  renderBackground();
+  renderWeather();
+  renderCustomText();
+  renderCustomImage();
+  renderColors();
+}
+
+function renderStageVisibility(){
+
+  const weatherVisible =
+    state.weatherVisible &&
+    state.obs.weather;
+
+  $("currentLayer").style.display =
+    state.graphicMode === "one" && weatherVisible
+      ? "grid"
+      : "none";
+
+  $("forecastLayer").style.display =
+    state.graphicMode !== "one" && weatherVisible
+      ? "block"
+      : "none";
+}
+
+/* =========================================================
+   LOGOS
+   ========================================================= */
+
+$("uploadLogoBtn").addEventListener("click",() => {
+  $("logoUpload").click();
+});
+
+$("logoUpload").addEventListener("change",async event => {
+
+  const files = Array.from(event.target.files || []);
+
+  for(const file of files){
+
+    const src = await readFile(file);
+
+    state.logos.push({
+      id:crypto.randomUUID
+        ? crypto.randomUUID()
+        : Date.now()+"-"+Math.random(),
+
+      name:file.name.replace(/\.[^/.]+$/,""),
+
+      type:"Primary Logo",
+
+      src,
+
+      visible:true,
+
+      position:"tr",
+
+      size:12,
+
+      opacity:100
+    });
+  }
+
+  renderLogoManager();
+  renderLogos();
+  saveState();
+
+  event.target.value = "";
+
+});
+
+function readFile(file){
+
+  return new Promise((resolve,reject) => {
+
+    const reader = new FileReader();
+
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = reject;
+
+    reader.readAsDataURL(file);
+
+  });
+
+}
+
+function renderLogoManager(){
+
+  const manager = $("logoManager");
+
+  if(!state.logos.length){
+
+    manager.innerHTML = `
+      <div style="color:#71869a;font-size:11px">
+        No logos uploaded yet.
+      </div>
+    `;
+
+    return;
+  }
+
+  manager.innerHTML = state.logos.map(logo => `
+
+    <div class="logo-card">
+
+      <div class="logo-preview">
+        <img
+          src="${escapeHTML(logo.src)}"
+          alt="${escapeHTML(logo.name)}"
+        >
+      </div>
+
+      <input
+        type="text"
+        value="${escapeHTML(logo.name)}"
+        data-logo-name="${logo.id}"
+        style="margin-bottom:6px"
+      >
+
+      <div class="logo-actions">
+
+        <select data-logo-type="${logo.id}">
+          ${[
+            "Primary Logo",
+            "Weather Logo",
+            "Sponsor Logo",
+            "Breaking News Logo"
+          ].map(type => `
+            <option
+              ${logo.type===type?"selected":""}
+            >${type}</option>
+          `).join("")}
+        </select>
+
+        <select data-logo-position="${logo.id}">
+          ${[
+            ["tl","Top Left"],
+            ["tr","Top Right"],
+            ["bl","Bottom Left"],
+            ["br","Bottom Right"],
+            ["c","Center"]
+          ].map(([value,label]) => `
+            <option
+              value="${value}"
+              ${logo.position===value?"selected":""}
+            >
+              ${label}
+            </option>
+          `).join("")}
+        </select>
+
+        <input
+          type="range"
+          min="3"
+          max="35"
+          value="${logo.size}"
+          data-logo-size="${logo.id}"
+        >
+
+        <input
+          type="range"
+          min="0"
+          max="100"
+          value="${logo.opacity}"
+          data-logo-opacity="${logo.id}"
+        >
+
+      </div>
+
+      <div style="display:flex;gap:6px;margin-top:7px">
+
+        <label class="toggle-row" style="flex:1;margin:0">
+          <span>Visible</span>
+
+          <label class="switch">
+            <input
+              type="checkbox"
+              data-logo-visible="${logo.id}"
+              ${logo.visible?"checked":""}
+            >
+            <span class="slider"></span>
+          </label>
+        </label>
+
+        <button
+          class="btn danger"
+          data-logo-delete="${logo.id}"
+        >
+          Delete
+        </button>
+
+      </div>
+
+    </div>
+
+  `).join("");
+
+  bindLogoControls();
+}
+
+function findLogo(id){
+  return state.logos.find(logo => logo.id === id);
+}
+
+function bindLogoControls(){
+
+  $$("[data-logo-name]").forEach(input => {
+
+    input.addEventListener("input",e => {
+
+      const logo = findLogo(e.target.dataset.logoName);
+
+      if(logo){
+        logo.name = e.target.value;
+        saveState();
+      }
+
+    });
+
+  });
+
+  $$("[data-logo-type]").forEach(input => {
+
+    input.addEventListener("change",e => {
+
+      const logo = findLogo(e.target.dataset.logoType);
+
+      if(logo){
+        logo.type = e.target.value;
+        renderLogos();
+        saveState();
+      }
+
+    });
+
+  });
+
+  $$("[data-logo-position]").forEach(input => {
+
+    input.addEventListener("change",e => {
+
+      const logo = findLogo(
+        e.target.dataset.logoPosition
+      );
+
+      if(logo){
+        logo.position = e.target.value;
+        renderLogos();
+        saveState();
+      }
+
+    });
+
+  });
+
+  $$("[data-logo-size]").forEach(input => {
+
+    input.addEventListener("input",e => {
+
+      const logo = findLogo(
+        e.target.dataset.logoSize
+      );
+
+      if(logo){
+        logo.size = Number(e.target.value);
+        renderLogos();
+        saveState();
+      }
+
+    });
+
+  });
+
+  $$("[data-logo-opacity]").forEach(input => {
+
+    input.addEventListener("input",e => {
+
+      const logo = findLogo(
+        e.target.dataset.logoOpacity
+      );
+
+      if(logo){
+        logo.opacity = Number(e.target.value);
+        renderLogos();
+        saveState();
+      }
+
+    });
+
+  });
+
+  $$("[data-logo-visible]").forEach(input => {
+
+    input.addEventListener("change",e => {
+
+      const logo = findLogo(
+        e.target.dataset.logoVisible
+      );
+
+      if(logo){
+        logo.visible = e.target.checked;
+        renderLogos();
+        saveState();
+      }
+
+    });
+
+  });
+
+  $$("[data-logo-delete]").forEach(button => {
+
+    button.addEventListener("click",() => {
+
+      const id = button.dataset.logoDelete;
+
+      state.logos =
+        state.logos.filter(logo => logo.id !== id);
+
+      renderLogoManager();
+      renderLogos();
+      saveState();
+
+    });
+
+  });
+
+}
+
+function renderLogos(){
+
+  const container = $("logosLayer");
+
+  container.innerHTML = "";
+
+  if(!state.layers.logo.visible){
+    return;
+  }
+
+  state.logos.forEach(logo => {
+
+    if(!logo.visible) return;
+
+    const img = document.createElement("img");
+
+    img.className =
+      "logo " + logo.position;
+
+    img.src = logo.src;
+    img.alt = logo.name;
+
+    img.style.width =
+      logo.size + "%";
+
+    img.style.opacity =
+      logo.opacity / 100;
+
+    container.appendChild(img);
+
+  });
+}
+
+/* =========================================================
+   CUSTOM ICONS
+   ========================================================= */
+
+$("uploadIconBtn").addEventListener("click",() => {
+  $("iconUpload").click();
+});
+
+$("iconUpload").addEventListener("change",async event => {
+
+  const files = Array.from(event.target.files || []);
+
+  for(const file of files){
+
+    state.icons.push({
+      id:crypto.randomUUID
+        ? crypto.randomUUID()
+        : Date.now()+"-"+Math.random(),
+
+      name:file.name.replace(/\.[^/.]+$/,""),
+
+      src:await readFile(file)
+    });
+
+  }
+
+  renderIconLibrary();
+  renderForecast();
+  saveState();
+
+  event.target.value = "";
+
+});
+
+function renderIconLibrary(){
+
+  const container = $("iconLibrary");
+
+  if(!state.icons.length){
+
+    container.innerHTML = `
+      <div style="color:#71869a;font-size:11px">
+        No custom icons uploaded.
+      </div>
+    `;
+
+    return;
+  }
+
+  container.innerHTML = state.icons.map(icon => `
+
+    <div
+      style="
+        display:flex;
+        align-items:center;
+        gap:8px;
+        border:1px solid var(--line);
+        background:#0e1a25;
+        padding:7px;
+        border-radius:8px;
+        margin-bottom:6px
+      "
+    >
+
+      <img
+        src="${escapeHTML(icon.src)}"
+        style="
+          width:38px;
+          height:38px;
+          object-fit:contain
+        "
+      >
+
+      <span style="flex:1;font-size:11px">
+        ${escapeHTML(icon.name)}
+      </span>
+
+      <button
+        class="btn danger"
+        data-icon-delete="${icon.id}"
+      >
+        ×
+      </button>
+
+    </div>
+
+  `).join("");
+
+  $$("[data-icon-delete]").forEach(button => {
+
+    button.addEventListener("click",() => {
+
+      const id = button.dataset.iconDelete;
+
+      state.icons =
+        state.icons.filter(icon => icon.id !== id);
+
+      state.forecast.items.forEach(item => {
+
+        if(item.icon === "custom:"+id){
+          item.icon = "☀️";
+        }
+
+      });
+
+      renderIconLibrary();
+      renderForecast();
+      saveState();
+
+    });
+
+  });
+}
+
+/* =========================================================
+   OBS
+   ========================================================= */
+
+function isOutputMode(){
+  return new URLSearchParams(location.search).get("broadcast") === "1";
+}
+
+function updateObsUrl(){
+
+  const url = new URL(location.href);
+
+  url.search = "";
+  url.searchParams.set("broadcast","1");
+
+  $("obsUrl").value = url.toString();
+}
+
+$("copyObsUrl").addEventListener("click",async () => {
+
+  try{
+
+    await navigator.clipboard.writeText(
+      $("obsUrl").value
+    );
+
+    $("copyObsUrl").textContent = "Copied!";
+
+    setTimeout(() => {
+      $("copyObsUrl").textContent = "Copy";
+    },1200);
+
+  }catch(e){
+
+    $("obsUrl").select();
+
+  }
+
+});
+
+$("openOutputBtn").addEventListener("click",() => {
+
+  const url = $("obsUrl").value;
+
+  window.open(
+    url,
+    "_blank",
+    "noopener"
+  );
+
+});
+
+$("obsWidth").addEventListener("input",e => {
+
+  state.obs.width =
+    Number(e.target.value) || 1920;
+
+  saveState();
+
+});
+
+$("obsHeight").addEventListener("input",e => {
+
+  state.obs.height =
+    Number(e.target.value) || 1080;
+
+  saveState();
+
+});
+
+$("obsFps").addEventListener("change",e => {
+
+  state.obs.fps =
+    Number(e.target.value);
+
+  saveState();
+
+});
+
+$("obsTransparent").addEventListener("change",e => {
+
+  state.obs.transparent =
+    e.target.checked;
+
+  if(isOutputMode()){
+
+    document.body.style.background =
+      state.obs.transparent
+        ? "transparent"
+        : "";
+
+  }
+
+  saveState();
+
+});
+
+$("obsCamera").addEventListener("change",e => {
+
+  state.obs.camera =
+    e.target.checked;
+
+  renderStage();
+  saveState();
+
+});
+
+$("obsWeather").addEventListener("change",e => {
+
+  state.obs.weather =
+    e.target.checked;
+
+  renderStage();
+  saveState();
+
+});
+
+$("obsAnimation").addEventListener("change",e => {
+
+  state.obs.animation =
+    e.target.checked;
+
+  renderBackground();
+  saveState();
+
+});
+
+/* =========================================================
+   CAMERA DEVICES
+   ========================================================= */
+
+async function enumerateDevices(){
+
+  try{
+
+    const devices =
+      await navigator.mediaDevices.enumerateDevices();
+
+    const cameras =
+      devices.filter(device =>
+        device.kind === "videoinput"
+      );
+
+    const mics =
+      devices.filter(device =>
+        device.kind === "audioinput"
+      );
+
+    $("cameraSelect").innerHTML =
+      `<option value="">Select Camera</option>` +
+      cameras.map((device,index) => `
+        <option value="${escapeHTML(device.deviceId)}">
+          ${escapeHTML(device.label || "Camera " + (index+1))}
+        </option>
+      `).join("");
+
+    $("micSelect").innerHTML =
+      `<option value="">Select Microphone</option>` +
+      mics.map((device,index) => `
+        <option value="${escapeHTML(device.deviceId)}">
+          ${escapeHTML(device.label || "Microphone " + (index+1))}
+        </option>
+      `).join("");
+
+  }catch(e){
+
+    console.warn("Device enumeration failed",e);
+
+  }
+
+}
+
+async function startCamera(){
+
+  if(!navigator.mediaDevices ||
+     !navigator.mediaDevices.getUserMedia){
+
+    alert(
+      "Camera access is unavailable here. Open this page over HTTPS or localhost."
+    );
+
+    return;
+  }
+
+  try{
+
+    if(cameraStream){
+
+      cameraStream.getTracks().forEach(track =>
+        track.stop()
+      );
+
+    }
+
+    const videoId =
+      $("cameraSelect").value || undefined;
+
+    const audioId =
+      $("micSelect").value || undefined;
+
+    cameraStream =
+      await navigator.mediaDevices.getUserMedia({
+
+        video:videoId
+          ? {
+              deviceId:{exact:videoId},
+              width:{ideal:1920},
+              height:{ideal:1080}
+            }
+          : {
+              width:{ideal:1920},
+              height:{ideal:1080}
+            },
+
+        audio:audioId
+          ? {
+              deviceId:{exact:audioId}
+            }
+          : true
+
+      });
+
+    $("previewVideo").srcObject =
+      cameraStream;
+
+    $("cameraPlaceholder").style.display =
+      "none";
+
+    await enumerateDevices();
+
+  }catch(error){
+
+    console.error(error);
+
+    alert(
+      "Could not start the camera. Check browser camera permissions."
+    );
+
+  }
+
+}
+
+function stopCamera(){
+
+  if(cameraStream){
+
+    cameraStream.getTracks().forEach(track =>
+      track.stop()
+    );
+
+    cameraStream = null;
+  }
+
+  $("previewVideo").srcObject = null;
+
+  $("cameraPlaceholder").style.display =
+    "grid";
+}
+
+$("startCameraBtn").addEventListener(
+  "click",
+  startCamera
+);
+
+$("stopCameraBtn").addEventListener(
+  "click",
+  stopCamera
+);
+
+/* =========================================================
+   FULLSCREEN
+   ========================================================= */
+
+$("fullscreenBtn").addEventListener("click",async () => {
+
+  try{
+
+    if(!document.fullscreenElement){
+      await document.documentElement.requestFullscreen();
+    }else{
+      await document.exitFullscreen();
+    }
+
+  }catch(e){}
+
+});
+
+/* =========================================================
+   RESET
+   ========================================================= */
+
+$("resetBtn").addEventListener("click",() => {
+
+  if(!confirm("Reset the entire WeatherCast setup?")){
+    return;
+  }
+
+  state = clone(defaultState);
+
+  saveState();
+  renderAll();
+
+});
+
+/* =========================================================
+   SAVE
+   ========================================================= */
+
+$("saveBtn").addEventListener("click",() => {
+
+  saveState();
+
+  const old =
+    $("saveBtn").textContent;
+
+  $("saveBtn").textContent =
+    "✓ Saved";
+
+  setTimeout(() => {
+    $("saveBtn").textContent = old;
+  },1200);
+
+});
+
+/* =========================================================
+   RENDER EVERYTHING
+   ========================================================= */
+
+function syncControls(){
+
+  $("backgroundMode").value =
+    state.backgroundMode;
+
+  $("animationMode").value =
+    state.animationMode;
+
+  $("greenMode").value =
+    state.greenMode;
+
+  $("daysRange").value =
+    state.forecast.days;
+
+  $("daysOut").textContent =
+    state.forecast.days;
+
+  $("layoutSelect").value =
+    state.layout;
+
+  $("obsWidth").value =
+    state.obs.width;
+
+  $("obsHeight").value =
+    state.obs.height;
+
+  $("obsFps").value =
+    state.obs.fps;
+
+  $("obsTransparent").checked =
+    state.obs.transparent;
+
+  $("obsCamera").checked =
+    state.obs.camera;
+
+  $("obsWeather").checked =
+    state.obs.weather;
+
+  $("obsAnimation").checked =
+    state.obs.animation;
+
+  $("customTextInput").value =
+    state.customText.text;
+
+  $("textSize").value =
+    state.customText.fontSize;
+
+  $("textWeight").value =
+    state.customText.weight;
+
+  $("textColor").value =
+    state.customText.color;
+
+  $("textSizeOut").textContent =
+    state.customText.fontSize + "px";
+
+}
+
+function renderAll(){
+
+  syncControls();
+  renderModeButtons();
+  renderWeather();
+  renderBackground();
+  renderCamera();
+  updateGraphicPosition();
+  renderCustomText();
+  renderCustomImage();
+  renderLayerManager();
+  renderLayerPositions();
+  renderLogoManager();
+  renderIconLibrary();
+  renderLogos();
+  renderColors();
+  renderStage();
+  updateObsUrl();
+
+}
+
+/* =========================================================
+   OUTPUT MODE
+   ========================================================= */
+
+function configureOutputMode(){
+
+  if(!isOutputMode()) return;
+
+  document.body.classList.add("output-mode");
+
+  if(state.obs.transparent){
+    document.body.style.background = "transparent";
+  }
+
+  /*
+   * Broadcast output intentionally hides the camera by default.
+   * This lets OBS place its physical camera source above this
+   * weather/forecast composition and chroma-key the green.
+   */
+
+  $("cameraLayer").style.display =
+    state.obs.camera && state.layers.camera.visible
+      ? "block"
+      : "none";
+
+}
+
+/* =========================================================
+   STARTUP
+   ========================================================= */
+
+setupChannel();
+renderAll();
+configureOutputMode();
+
+if(
+  navigator.mediaDevices &&
+  navigator.mediaDevices.enumerateDevices
+){
+  enumerateDevices();
+}
+
+/*
+ * Periodically reload saved state in broadcast mode.
+ * This also provides a fallback when BroadcastChannel isn't
+ * available in the browser/OBS environment.
+ */
+
+if(isOutputMode()){
+
+  setInterval(() => {
+
+    try{
+
+      const saved =
+        localStorage.getItem(STORAGE_KEY);
+
+      if(!saved) return;
+
+      const incoming =
+        JSON.parse(saved);
+
+      state = deepMerge(
+        clone(defaultState),
+        incoming
+      );
+
+      renderAll();
+
+    }catch(e){}
+
+  },1000);
+
+}
+</script>
+
 </body>
 </html>
