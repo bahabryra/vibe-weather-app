@@ -1,0 +1,227 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>WeatherCast Studio</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-mark" id="brandMark">☁</div>
+      <div>
+        <strong id="brandName">WeatherCast Studio</strong>
+        <span>Weather graphics + live camera</span>
+      </div>
+    </div>
+    <div class="top-actions">
+      <button class="ghost" id="fullscreenBtn">Fullscreen</button>
+      <button class="primary" id="saveBtn">Save setup</button>
+    </div>
+  </header>
+
+  <main class="app">
+    <aside class="sidebar">
+      <nav>
+        <button class="nav active" data-tab="dashboard">Dashboard</button>
+        <button class="nav" data-tab="camera">Camera</button>
+        <button class="nav" data-tab="graphics">Graphics</button>
+        <button class="nav" data-tab="branding">Branding</button>
+        <button class="nav" data-tab="obs">OBS / Stream</button>
+      </nav>
+      <div class="connection">
+        <span class="dot"></span>
+        Browser studio ready
+      </div>
+    </aside>
+
+    <section class="content">
+      <div class="tab" id="dashboard">
+        <div class="hero">
+          <div>
+            <p class="eyebrow">BROADCAST WEATHER STUDIO</p>
+            <h1>Build your weather scene.</h1>
+            <p class="muted">Use your camera, weather graphics, logos and overlays together in one browser-based control room.</p>
+          </div>
+          <div class="clock" id="clock">--:--:--</div>
+        </div>
+
+        <div class="grid two">
+          <article class="card preview-card">
+            <div class="card-head"><h2>Live preview</h2><span class="pill" id="cameraStatus">CAMERA OFF</span></div>
+            <div class="stage small" id="previewStage">
+              <video id="cameraPreview" autoplay muted playsinline></video>
+              <div class="weather-overlay" id="weatherOverlay">
+                <div class="overlay-location" id="overlayLocation">YOUR CITY</div>
+                <div class="overlay-temp" id="overlayTemp">72°</div>
+                <div class="overlay-condition" id="overlayCondition">Partly Cloudy</div>
+              </div>
+              <div id="weekOverlay" class="week-overlay"></div>
+              <img id="previewLogo" class="preview-logo" alt="Logo">
+              <div class="stage-placeholder" id="stagePlaceholder">Camera preview</div>
+            </div>
+            <div class="button-row">
+              <button class="primary" id="startCamera">Start camera</button>
+              <button class="ghost" id="stopCamera">Stop</button>
+            </div>
+          </article>
+
+          <article class="card">
+            <div class="card-head"><h2>Weather card</h2><span class="pill live">GRAPHIC</span></div>
+            <div class="weather-card">
+              <div>
+                <p class="muted">CURRENT CONDITIONS</p>
+                <h3 id="cardLocation">Your City</h3>
+                <div class="big-temp" id="cardTemp">72°F</div>
+                <p id="cardCondition">Partly Cloudy</p>
+              </div>
+              <div class="weather-icon" id="weatherIcon">⛅</div>
+            </div>
+            <div class="button-row">
+              <button class="primary" id="updateGraphic">Update graphic</button>
+              <button class="ghost" id="randomWeather">Demo weather</button>
+            </div>
+          </article>
+        </div>
+
+        <div class="grid three">
+          <div class="stat"><span>Camera</span><strong id="statCamera">OFF</strong></div>
+          <div class="stat"><span>Graphics</span><strong>READY</strong></div>
+          <div class="stat"><span>OBS</span><strong id="statObs">BROWSER</strong></div>
+        </div>
+      </div>
+
+      <div class="tab hidden" id="camera">
+        <div class="section-title"><p class="eyebrow">CAMERA</p><h1>Camera control</h1></div>
+        <div class="card">
+          <div class="stage" id="cameraStage">
+            <video id="cameraVideo" autoplay muted playsinline></video>
+            <div class="stage-placeholder" id="cameraPlaceholder">Your camera feed will appear here.</div>
+          </div>
+          <div class="control-grid">
+            <label>Camera
+              <select id="cameraSelect"><option value="">Default camera</option></select>
+            </label>
+            <label>Microphone
+              <select id="micSelect"><option value="">Default microphone</option></select>
+            </label>
+            <label>Resolution
+              <select id="resolutionSelect">
+                <option value="1280x720">1280 × 720</option>
+                <option value="1920x1080">1920 × 1080</option>
+                <option value="640x480">640 × 480</option>
+              </select>
+            </label>
+          </div>
+          <div class="button-row">
+            <button class="primary" id="cameraStart2">Start camera</button>
+            <button class="ghost" id="cameraStop2">Stop camera</button>
+          </div>
+          <p class="hint">Camera access stays inside your browser. For OBS, use the Browser Source method described in the OBS tab.</p>
+        </div>
+      </div>
+
+      <div class="tab hidden" id="graphics">
+  <div class="section-title"><p class="eyebrow">GRAPHICS</p><h1>Weather graphics</h1></div>
+
+  <div class="grid two">
+    <div class="card">
+      <h2>Current conditions</h2>
+      <div class="control-grid">
+        <label>Location<input id="locationInput" value="Your City"></label>
+        <label>Temperature<input id="tempInput" type="number" value="72"></label>
+        <label>Condition<input id="conditionInput" value="Partly Cloudy"></label>
+        <label>Icon
+          <select id="iconInput">
+            <option value="⛅">Partly cloudy</option><option value="☀️">Sunny</option>
+            <option value="🌧️">Rain</option><option value="⛈️">Thunderstorm</option>
+            <option value="❄️">Snow</option><option value="🌫️">Fog</option>
+          </select>
+        </label>
+      </div>
+      <button class="primary" id="applyWeather">Apply graphic</button>
+    </div>
+
+    <div class="card">
+      <h2>Forecast display</h2>
+      <div class="control-grid">
+        <label>Forecast layout
+          <select id="forecastMode">
+            <option value="week">7-Day / Week</option>
+            <option value="days">Multi-Day</option>
+            <option value="current">Current Only</option>
+          </select>
+        </label>
+        <label>Days shown
+          <input id="daysShown" type="number" min="1" max="7" value="7">
+        </label>
+        <label>Accent <input type="color" id="accentInput" value="#49a6ff"></label>
+        <label>Overlay opacity <input type="range" id="opacityInput" min="20" max="100" value="92"></label>
+        <label>Position
+          <select id="positionInput"><option value="bottom">Bottom</option><option value="top">Top</option></select>
+        </label>
+      </div>
+      <button class="ghost" id="clearGraphic">Hide weather graphic</button>
+    </div>
+  </div>
+
+  <div class="card forecast-editor">
+    <div class="card-head">
+      <div><h2>7-day forecast editor</h2><p class="muted">Create a forecast graphic for several days or an entire week.</p></div>
+      <button class="primary" id="applyForecast">Apply forecast</button>
+    </div>
+    <div id="forecastRows"></div>
+  </div>
+
+  <div class="card">
+    <div class="card-head"><h2>Forecast preview</h2><span class="pill">BROADCAST GRAPHIC</span></div>
+    <div id="forecastPreview" class="forecast-preview"></div>
+  </div>
+</div>
+<div class="tab hidden" id="branding">
+        <div class="section-title"><p class="eyebrow">BRANDING</p><h1>Upload your station assets</h1></div>
+        <div class="grid two">
+          <div class="card upload-card">
+            <h2>Station logo</h2>
+            <p class="muted">PNG, JPG, SVG or WebP</p>
+            <input type="file" id="logoUpload" accept="image/*">
+            <div class="asset-preview"><img id="logoPreview" alt="Uploaded logo preview"><span id="logoEmpty">No logo uploaded</span></div>
+          </div>
+          <div class="card upload-card">
+            <h2>Weather icons</h2>
+            <p class="muted">Upload an icon set or individual images.</p>
+            <input type="file" id="iconUpload" accept="image/*" multiple>
+            <div id="iconList" class="asset-list">No custom icons yet</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="tab hidden" id="obs">
+        <div class="section-title"><p class="eyebrow">OBS / STREAM</p><h1>Easy OBS setup</h1></div>
+        <div class="card">
+          <div class="obs-box">
+            <div class="obs-number">01</div>
+            <div><h2>Use Browser Source</h2><p>Host this folder on HTTPS, then add the public page URL as an OBS Browser Source.</p></div>
+          </div>
+          <div class="obs-box">
+            <div class="obs-number">02</div>
+            <div><h2>Set 1920 × 1080</h2><p>In OBS, set the Browser Source width to <b>1920</b> and height to <b>1080</b>.</p></div>
+          </div>
+          <div class="obs-box">
+            <div class="obs-number">03</div>
+            <div><h2>Control it here</h2><p>Keep this studio open in another browser tab. Changes are saved locally in this browser.</p></div>
+          </div>
+          <div class="notice">Tip: If you need the camera feed inside OBS, this page can display it through the browser source. Camera permissions must be granted to the page.</div>
+        </div>
+        <div class="card">
+          <h2>OBS page URL</h2>
+          <div class="url-row"><input id="pageUrl" readonly><button class="ghost" id="copyUrl">Copy</button></div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
